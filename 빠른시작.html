@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IBSheet7 → IBSheet8 변환 툴킷 — 빠른 시작</title>
+<style>
+  :root{
+    --bg:#f6f8fb; --paper:#ffffff; --ink:#1f2937; --sub:#5b6675; --line:#e5e9f0;
+    --brand:#2563eb; --brand2:#6366f1; --code-bg:#0f172a; --code-ink:#e2e8f0;
+    --ok:#15803d; --okbg:#ecfdf3; --warn:#b45309; --warnbg:#fffbeb; --warnline:#fcd34d;
+    --det:#2563eb; --det-bg:#eff4ff; --jud:#9333ea; --jud-bg:#faf2ff; --ver:#15803d; --ver-bg:#ecfdf3;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:'Segoe UI','Malgun Gothic','Apple SD Gothic Neo',sans-serif;line-height:1.7;font-size:15px}
+  .wrap{max-width:900px;margin:0 auto;padding:0 20px 70px}
+  header.top{background:linear-gradient(135deg,#1d4ed8,#7c3aed);color:#fff;border-radius:0 0 22px 22px;
+    padding:40px 38px;margin-bottom:22px;box-shadow:0 14px 34px rgba(76,29,149,.26)}
+  header.top .eyebrow{font-size:12.5px;letter-spacing:2px;text-transform:uppercase;opacity:.85;font-weight:600}
+  header.top h1{margin:8px 0 0;font-size:28px;font-weight:800;letter-spacing:-.5px;line-height:1.25}
+  header.top p{margin:10px 0 0;opacity:.95;font-size:14.5px}
+  header.top .tag{display:inline-block;margin-top:16px;margin-right:8px;padding:6px 15px;border-radius:999px;
+    background:rgba(255,255,255,.18);font-size:12.5px;font-weight:600;backdrop-filter:blur(4px)}
+
+  .step{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:6px 24px 20px;margin-top:16px;
+    box-shadow:0 1px 3px rgba(16,24,40,.04);position:relative;overflow:hidden}
+  .step::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:linear-gradient(180deg,#2563eb,#7c3aed)}
+  .sec-head{display:flex;align-items:center;gap:12px;margin:18px 0 12px}
+  .sec-head .n{display:inline-flex;width:32px;height:32px;align-items:center;justify-content:center;border-radius:9px;
+    background:linear-gradient(135deg,#2563eb,#6366f1);color:#fff;font-size:15px;font-weight:800;flex:none}
+  .sec-head h2{font-size:18px;margin:0;font-weight:800;letter-spacing:-.3px}
+
+  p{margin:9px 0}
+  ul,ol{margin:9px 0;padding-left:22px} li{margin:5px 0}
+  code{background:#eef1f6;color:#9333ea;padding:1.5px 6px;border-radius:5px;font-size:12.5px;
+    font-family:'Consolas','D2Coding',monospace}
+  pre{background:var(--code-bg);color:var(--code-ink);padding:14px 16px;border-radius:10px;overflow-x:auto;
+    font-size:13px;line-height:1.55;font-family:'Consolas','D2Coding',monospace;margin:10px 0}
+  pre code{background:none;color:inherit;padding:0}
+
+  table{width:100%;border-collapse:collapse;margin:6px 0;font-size:13.5px;background:var(--paper);
+    border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+  th,td{border-bottom:1px solid var(--line);padding:10px 13px;text-align:left;vertical-align:top}
+  th{background:#f1f5fb;font-weight:700;color:#374151;font-size:12.5px}
+  tr:last-child td{border-bottom:none}
+
+  .callout{border-radius:10px;padding:12px 16px;margin:12px 0;font-size:13.5px}
+  .callout.warn{background:var(--warnbg);border:1px solid var(--warnline);color:#7c4a06}
+  .callout.info{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af}
+  .callout b{color:inherit}
+
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0;font-size:12.5px;font-weight:700}
+  .flow .p{background:var(--det-bg);color:var(--det);border:1px solid #cfe0ff;border-radius:999px;padding:5px 13px}
+  .flow .arw{color:var(--sub)}
+
+  footer{text-align:center;color:var(--sub);font-size:12.5px;margin-top:26px;line-height:1.9}
+  footer b{color:var(--ink)}
+  a{color:var(--brand)}
+
+  @media(max-width:680px){ header.top{padding:30px 22px} header.top h1{font-size:22px} }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap" style="padding:0">
+    <div class="eyebrow">Quick Start · 빠른 시작</div>
+    <h1>IBSheet7 → IBSheet8 변환 툴킷</h1>
+    <p>준비물 → 배치 → 변환 → 검증 → 후속작업. 5분 요약.</p>
+    <span class="tag">1페이지 요약</span>
+    <span class="tag">멀티 AI</span>
+    <span class="tag">아이비리더스</span>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="callout info" style="margin-top:4px">
+    이 문서는 <b>1페이지 요약본</b>입니다. 상세 설치·문제해결·FAQ는 <a href="사용가이드.html">사용가이드</a>를 참고하세요.
+  </div>
+
+  <!-- 1 -->
+  <div class="step">
+    <div class="sec-head"><span class="n">1</span><h2>준비물 3가지 <span style="font-size:12.5px;font-weight:600;color:var(--sub)">(설치 순서: Node → Python → AI)</span></h2></div>
+    <table>
+      <tr><th style="width:22%">준비물</th><th>설치 (인터넷 가능 시)</th><th style="width:26%">확인</th></tr>
+      <tr><td><b>Node.js</b> (LTS 18+)</td><td><a href="https://nodejs.org">nodejs.org</a> → LTS <code>.msi</code></td><td><code>node --version</code></td></tr>
+      <tr><td><b>Python 3</b> (3.8+)</td><td><a href="https://www.python.org/downloads/">python.org</a> → <b>"Add to PATH" 체크</b></td><td><code>python --version</code></td></tr>
+      <tr><td><b>AI 도구</b> (택1)</td><td>Claude Code <code>npm i -g @anthropic-ai/claude-code</code><br>Gemini <code>npm i -g @google/gemini-cli</code><br>Copilot: VS Code 확장</td><td>도구별<br>(예 <code>claude --version</code>)</td></tr>
+    </table>
+    <div class="callout warn">
+      <b>사내 폐쇄망·관리자권한 없음</b>: 인터넷 PC에서 설치 파일을 받아 전송하거나 IT 관리자에게 요청. 프록시는 <code>npm config set proxy http://프록시:포트</code>.
+    </div>
+  </div>
+
+  <!-- 2 -->
+  <div class="step">
+    <div class="sec-head"><span class="n">2</span><h2>툴킷 배치</h2></div>
+    <p><b>툴킷 받기 — 둘 중 하나</b></p>
+    <table>
+      <tr><th style="width:62%">방법</th><th>결과 폴더</th></tr>
+      <tr><td>Git clone (접근 권한을 받은 경우)<br><code>git clone https://github.com/ibsheet/ibsheet7to8-migrator.git</code></td><td><code>ibsheet7to8-migrator</code></td></tr>
+      <tr><td>압축 파일로 전달받은 경우 → 원하는 위치에 풀기</td><td>압축 파일 안의 폴더명</td></tr>
+    </table>
+    <p>폴더를 원하는 위치에 두고, <b>그 폴더에서 AI 도구를 실행</b>합니다.
+    진입점 파일(<code>CLAUDE.md</code>/<code>GEMINI.md</code>/<code>.github/copilot-instructions.md</code>)이 자동 인식되어 <code>AGENTS.md</code> 규칙이 적용됩니다.</p>
+    <p><b>설치 확인</b> — 필요한 것이 다 있는지 한 번에 점검합니다.</p>
+    <pre><code>python migrate.py doctor</code></pre>
+    <div class="callout info">(선택) 프로젝트별 접두사 규칙이 있으면 <code>migrate.config.example.json</code> → 대상 프로젝트 루트에 <code>migrate.config.json</code>으로 복사·수정.</div>
+    <div class="callout info">폴더 안에서 <b><code>helpers/ibsheet-migration.js</code> 만 고객 웹앱에 배포되는 산출물</b>입니다(5번 참고). <code>migrate.py</code>·<code>docs</code>·<code>engine</code>·<code>verify</code>·<code>samples</code>는 변환 작업용이라 배포하지 않습니다.</div>
+  </div>
+
+  <!-- 3 -->
+  <div class="step">
+    <div class="sec-head"><span class="n">3</span><h2>변환 실행 (자연어로 요청)</h2></div>
+    <pre><code>src/main/webapp/.../orderList.jsp 를 IBSheet8로 변환해줘</code></pre>
+    <div class="callout info"><b>어디에 입력?</b> 1번에서 설치한 AI 도구의 대화창에 입력합니다 — Claude Code: 터미널 <code>claude</code> 실행 후 프롬프트 / Gemini: <code>gemini</code> / Copilot: VS Code Copilot Chat 패널.</div>
+    <div class="callout warn"><b>AI가 없으면 입력할 곳이 없습니다.</b> 이 경우 스크립트 단독으로 대신합니다 — 단, CLI와 AI는 <b>역할이 다릅니다</b>:
+      <table style="margin:10px 0 4px;background:rgba(255,255,255,.55)">
+        <tr><th style="width:40%">&nbsp;</th><th>CLI 단독 (AI 없음)</th><th>AI 자연어 요청</th></tr>
+        <tr><td>안전한 자동 변환</td><td>✅</td><td>✅</td></tr>
+        <tr><td>판단 변환(<code>Hidden→Visible</code> 반전, 반환값 의미변경 등)</td><td>❌ <code>needs_review</code>에 목록만</td><td>✅ <code>docs/</code> 근거로 처리</td></tr>
+        <tr><td>완성도</td><td>80% (나머지는 사람이 손수정)</td><td>완성까지</td></tr>
+      </table>
+      → AI 없이 하려면 CLI 한 줄로 변환+검증까지 돌립니다.
+      <pre style="margin:8px 0 6px"><code>python migrate.py convert src/orderList.jsp --out build/</code></pre>
+      종료코드 <b><code>2</code></b> 가 나오면 <b>실패가 아니라</b> "판단 변환이 남았다"는 신호입니다.
+      옆에 생긴 <code>*.report.json</code>의 <code>needs_review</code> 목록을 <code>docs/</code> 보고 사람이 직접 마무리한 뒤
+      <code>python migrate.py verify build/orderList.jsp --asis src/orderList.jsp</code>로 확인합니다.
+    </div>
+    <div class="flow">
+      <span class="p">자동 변환</span><span class="arw">→</span>
+      <span class="p">판단 변환 (docs 근거)</span><span class="arw">→</span>
+      <span class="p">자기 검증</span><span class="arw">→</span>
+      <span class="p">리포트</span>
+    </div>
+    <ul style="margin-bottom:0">
+      <li><b>한 번에 한 파일씩</b> 변환합니다(함수 누락 방지). 폴더를 주면 순차 처리.</li>
+      <li>결과는 원본 옆 <code>*.tobe.jsp</code>로 생성 — <b>원본 보존</b>.</li>
+    </ul>
+  </div>
+
+  <!-- 4 -->
+  <div class="step">
+    <div class="sec-head"><span class="n">4</span><h2>완료 판정 — 검증 3종 모두 PASS</h2></div>
+    <table>
+      <tr><th style="width:30%">검증</th><th>통과 기준</th></tr>
+      <tr><td><code>residue_scan</code></td><td>IBSheet7 잔존 = 0</td></tr>
+      <tr><td><code>jscheck</code></td><td>JS 구문 OK</td></tr>
+      <tr><td><code>fn_parity</code></td><td>원본 함수 누락 = 0</td></tr>
+    </table>
+    <p style="margin-bottom:6px">직접 확인할 때:</p>
+    <pre><code>python migrate.py verify build/orderList.jsp --asis src/orderList.jsp</code></pre>
+    <table>
+      <tr><th style="width:22%">종료코드</th><th>뜻</th></tr>
+      <tr><td><code>0</code></td><td>완료</td></tr>
+      <tr><td><code>1</code></td><td>검증 실패 (JS 구문 오류 또는 원본 함수 누락)</td></tr>
+      <tr><td><code>2</code></td><td><b>판단 변환 필요</b> — 실패가 아니라 아직 남은 작업이 있다는 신호</td></tr>
+      <tr><td><code>3</code></td><td>사용법 오류</td></tr>
+    </table>
+    <div class="callout warn">⚠ 의미가 크게 바뀐 변환(예: <code>GetSearchData</code>→ajax)은 <b>브라우저 동작 확인 필요</b>.</div>
+    <div class="callout warn">⚠ <b>검증 3종은 정적 검사입니다.</b> 아래 5번의 브릿지 헬퍼 배포가 빠져도 3종은 PASS로 나오지만 브라우저에서는 오류가 납니다.</div>
+  </div>
+
+  <!-- 5 -->
+  <div class="step">
+    <div class="sec-head"><span class="n">5</span><h2>변환 후</h2></div>
+    <div class="callout warn">
+      <b>★ 필수 — 브릿지 헬퍼 배포 (빠뜨리면 화면이 안 뜹니다)</b><br>
+      변환 결과는 <code>helpers/ibsheet-migration.js</code> 의 함수(<code>getValue2</code>·<code>setAttribute2</code>·<code>getRowByIndex7</code> 등 <code>2</code>/<code>7</code> 접미사)를 호출합니다.
+      이 파일을 웹앱에 복사하고 <b>IBSheet8 본체 다음에</b> 불러오세요. 공통 include에 한 번만 넣으면 됩니다.
+    </div>
+    <pre><code>&lt;script src="/js/ibsheet/ibsheet.js"&gt;&lt;/script&gt;
+&lt;script src="/js/ibsheet/plugins/ibsheet-common.js"&gt;&lt;/script&gt;   &lt;!-- IB_Preset 쓰면 필요 --&gt;
+&lt;script src="/js/ibsheet/plugins/ibsheet-excel.js"&gt;&lt;/script&gt;    &lt;!-- 엑셀/텍스트 다운·업로드 --&gt;
+&lt;script src="/js/ibsheet/plugins/ibsheet-dialog.js"&gt;&lt;/script&gt;   &lt;!-- 찾기·피벗 다이얼로그 --&gt;
+&lt;script src="/js/ibsheet/plugins/jszip.min.js"&gt;&lt;/script&gt;        &lt;!-- exportData/importData --&gt;
+&lt;script src="/js/ibsheet/ibsheet-migration.js"&gt;&lt;/script&gt;</code></pre>
+    <div class="callout warn">변환 결과에 <code>Extend:IB_Preset.*</code>(Status·DelCheck 등)이 있으면 <b><code>plugins/ibsheet-common.js</code>도 함께</b> 불러와야 합니다. 본체에 없는 전역이라, 빠뜨리면 검증 3종은 PASS인데 브라우저에서 <code>IB_Preset is not defined</code>로 죽습니다. CLI가 변환 결과를 보고 알려줍니다.</div>
+    <div class="callout warn"><b>IBSheet8은 기능이 본체 + 플러그인으로 나뉘어 있습니다.</b> <code>IB_Preset.*</code>→<code>plugins/ibsheet-common.js</code>, <code>down2Excel</code>·<code>loadExcel</code>·<code>down2ExcelBuffer</code> 계열→<code>plugins/ibsheet-excel.js</code>, <code>showFindDialog</code>·<code>showPivotDialog</code> 계열→<code>plugins/ibsheet-dialog.js</code>, <code>exportData</code>·<code>importData</code>(클라이언트 방식 엑셀)→<code>plugins/jszip.min.js</code>. 빠뜨리면 검증 3종은 PASS인데 브라우저에서 <code>... is not a function</code>으로 죽습니다. <b>엑셀·텍스트 다운로드/업로드는 서버 모듈 설치까지 필요합니다.</b> <code>migrate.py convert</code>가 변환 결과를 보고 알려줍니다.</div>
+    <div class="callout warn"><b>다이얼로그 참고</b> — IBSheet7 에 대응이 있는 것은 <code>ShowFindDialog</code>·<code>ShowPivotDialog</code> 두 개뿐입니다. 엑셀 다운로드/업로드 등 나머지 다이얼로그는 <b>IBSheet8 신규 기능</b>이라 변환 대상이 아닙니다.</div>
+    <p style="margin-bottom:2px"><b>이 툴킷 범위 밖 → 별도 수행</b></p>
+    <ol style="margin-bottom:4px">
+      <li><code>*.tobe.jsp</code> 검토 후 반영</li>
+      <li><b>서버</b>(조회/저장 엔드포인트·매퍼 SQL)가 IBSheet8 형식과 맞는지 확인·개발</li>
+      <li><b>브라우저 QA</b>(렌더·조회·저장·이벤트)</li>
+    </ol>
+  </div>
+
+  <footer>
+    막히면 → <a href="사용가이드.html">사용가이드</a> 11. 문제 해결 참고<br>
+    <b>아이비리더스</b> · 기술지원 <b>1644-5615</b> (ARS 2번) · www.ibsheet.com
+  </footer>
+
+</div>
+</body>
+</html>

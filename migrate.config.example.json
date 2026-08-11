@@ -1,0 +1,32 @@
+{
+  "_comment": "프로젝트별 IBSheet7→8 변환 컨벤션. 이 파일을 변환 대상 프로젝트에 'migrate.config.json'(또는 'ibsheet8-migrate.config.json')으로 복사해 환경에 맞게 수정하세요. 엔진이 입력 파일 위치에서 상위 디렉터리로 올라가며 자동 탐색합니다. 모든 항목은 선택입니다.",
+  "_engine_scope": "엔진이 자동 적용하는 것은 stripPrefixes/keepPrefixes 뿐이며, 그것도 '컬럼 자리의 문자열 리터럴'(Col 정의의 Name, 컬럼 인자를 받는 메서드의 리터럴 인자)에 한정됩니다. 런타임 문자열 조립이나 컬럼이 아닌 참조는 CONFIG_PREFIX_RESIDUE 검토 항목으로 보고되며 사람/AI가 판단합니다. urlConvention·sheetVarSuffix·output 은 엔진이 사용하지 않는 참조값입니다.",
+
+  "sheetVarSuffix": "Sheet",
+  "_sheetVarSuffix": "시트 인스턴스 변수의 명명 접미사. 잔존 스캔/접두사 판별에 사용. 예: abnormalListSheet → 접미사 'Sheet'.",
+
+  "stripPrefixes": [
+    "\\w+DTOList\\.",
+    "\\w+Sheet\\."
+  ],
+  "_stripPrefixes": "컬럼 참조(get/setValue, setAttribute의 col 인자, Col 정의의 Name)에서 제거해야 하는 접두사. 리스트/시트 변수 접두사는 IBSheet8 컬럼 Name에 들어갈 수 없으므로 strip.",
+
+  "keepPrefixes": [
+    "\\w+CommonDTO\\.",
+    "\\w+DTO\\.",
+    "\\w+Map\\.",
+    "\\w*Map\\."
+  ],
+  "_keepPrefixes": "폼 필드/팝업 매핑 접두사 — 컬럼이 아니므로 절대 strip하지 않는다. 단일 DTO(폼 필드), 팝업 code/description 매핑 등.",
+
+  "urlConvention": {
+    "search": "{screenId}Ajax.do",
+    "save": "{screenId}Save.do",
+    "_comment": "조회/저장 서버 호출 URL 변환 규칙(프로젝트마다 다름). 화면 ID 기준 자동 제안에 사용. 백엔드 엔드포인트 구현 여부는 별도."
+  },
+
+  "output": {
+    "mode": "sibling",
+    "_mode": "sibling = 원본 옆에 *.tobe.<ext> 생성(원본 보존). 'inplace'는 원본 덮어쓰기(사용자 확인 후)."
+  }
+}

@@ -1,0 +1,69 @@
+# showProgress ***(method)***
+
+<!-- synonyms: showProgress, show-progress, 진행, 진행률, 진행 상태, 프로그레스, 로딩, 표시, 열기, progress, dialog, loading -->
+
+> 시트 영역 가운데에 진행상태를 표시하는 `Dialog`를 띄웁니다.
+>
+> 다이얼로그를 제거하기 전까지 시트는 비활성화 됩니다.
+>
+> [hideMessage](./hide-message)를 호출하시면 다이얼로그가 제거됩니다.
+>
+> [SuppressMessage](/docs/props/cfg/suppress-message) : 0, 1 에서만 동작합니다.
+
+###
+![showProgress](/assets/imgs/showProgress.png "시트 영역 위에 진행율 다이얼로그를 띄움")<br/>
+
+### Syntax
+```javascript
+void showProgress( caption, text, cancel, pos, cnt );
+```
+
+### Parameters
+
+
+|Name|Type|Required| Description |
+|----------|-----|---|----|
+|caption|`string`|<span class='required'>필수</span>|다이얼로그의 제목|
+|text|`string`|<span class='required'>필수</span>|다이얼로그의 내용|
+|cancel|`string`|<span class='optional'>선택</span>|다이얼로그에 표시될 버튼 내용(버튼을 클릭시 다이얼로그는 제거되고 시트 내부에 `CancelProgress` 속성이 `1`로 수정됨) (`default: null`)|
+|pos|`number`|<span class='optional'>선택</span>|cnt(전체)중 진행 정도 (`default: 0`)|
+|cnt|`number`|<span class='optional'>선택</span>|진행 정도 마지노선 (`cnt:5, pos:1`이면 프로그레스 바는 1/5 진행으로 표시됨) (`default: 0`)|
+
+### Return Value
+***none***
+
+### Example
+```javascript
+function popup(){
+	sheet.showProgress({caption: "회계 년도 계산 중", text: "잠시만 기다려주세요.", pos: 2, cnt: 5});
+}
+```
+
+전체 데이터를 순회하며 값을 변경하는 동안 진행률을 표시하는 예제입니다.  
+단계를 `setTimeout`으로 쪼개야 화면이 갱신되어 진행 바가 오릅니다(동기 `for` 루프에서는 갱신되지 않습니다).
+
+```javascript
+var rows = sheet.getDataRows();
+var total = rows.length;
+(function step(i) {
+    if (i >= total) {
+        sheet.hideMessage();   // 완료 시 다이얼로그 닫기 (시트 활성화)
+        return;
+    }
+    sheet.showProgress({ caption: "처리 중", text: (i + 1) + " / " + total, pos: i + 1, cnt: total });
+    sheet.setValue(rows[i], "결과", "완료");        // 행별 값 변경
+    setTimeout(function () { step(i + 1); }, 0);    // 단계를 쪼개 화면 갱신
+})(0);
+```
+
+### Read More
+
+- [SuppressMessage cfg](/docs/props/cfg/suppress-message)
+- [hideMessage method](./hide-message)
+
+
+### Since
+
+|product|version|desc|
+|---|---|---|
+|core|8.0.0.0|기능 추가|

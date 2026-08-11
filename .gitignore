@@ -1,0 +1,23 @@
+# 내부 전략 문서 (레포지토리에 올리지 않음 — 로컬에만 보관)
+제품포지셔닝.md
+제품포지셔닝.html
+
+# 변환 산출물 (원본 옆에 생성됨)
+*.tobe.*
+report.json
+
+# 프로젝트별 설정 (템플릿만 커밋, 실제 설정은 각 프로젝트에서)
+migrate.config.json
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# OS / 에디터
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/

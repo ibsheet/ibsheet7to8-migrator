@@ -1,0 +1,1151 @@
+{
+  "_comment": "IBSheet7→8 결정론적 변환 규칙. safe_method_renames=1:1 동일 시그니처(자동 치환 안전), value_transforms=속성값 변환, flag_for_review=시맨틱 변경 필요(자동 치환 금지, 마커만 삽입). 근거: docs/ibsheet7-manual/ · docs/ibsheet8-manual/ 벤더 매뉴얼 전문 및 그에 맞춰 재검증한 docs/method-mapping.md · docs/property-mapping.md · docs/event-mapping.md.",
+  "v7_event_handlers": {
+    "_comment": "v7 이벤트 → v8 이벤트 + 핸들러 인자 대응. v7 은 `function <시트id>_OnXxx(A,B,...)` **함수명 규약**으로 등록했고, v8 은 초기화 `Events` 객체에 넣고 인자를 **`evtParam` 객체 하나**로 받는다. 메서드 호출이 아니어서 기존 규칙이 못 잡았다. `args` = 확실한 대응(v8 이벤트 페이지의 Parameters 표와 이름이 같은 것), `args_unmapped` = 이름이 없어져 사람이 확인해야 하는 것. `note` 는 의미 차이.",
+    "OnAfterColumnMove": {"v8": "onAfterColMove", "args": {"Col": "col"}, "args_unmapped": ["NewPos"], "note": "✅"},
+    "OnAfterEdit": {"v8": "onAfterEdit", "args": {"Row": "row", "Col": "col"}},
+    "OnAfterExpand": {"v8": "onAfterExpand", "args": {"Row": "row"}, "args_unmapped": ["Expand"], "note": "✅"},
+    "OnAfterPaste": {"v8": "onAfterPaste", "note": "✅"},
+    "OnBeforeCheck": {"v8": "onBeforeChange", "args": {"Row": "row", "Col": "col"}, "note": "★v8 에 CheckBox 전용 이벤트가 없다 — `onBeforeChange` 는 **모든 타입 컬럼**에서 발생하므로 컬럼 가드가 필요하다."},
+    "OnBeforeCheckAll": {"v8": "onBeforeCheckAll", "args": {"Col": "col"}, "args_unmapped": ["Row"], "note": "✅"},
+    "OnBeforeColumnMove": {"v8": "onBeforeColMove", "args": {"Col": "col"}, "args_unmapped": ["NewPos"], "note": "✅"},
+    "OnBeforeDownload": {"v8": "onBeforeExport", "args_unmapped": ["downloadType", "frm"], "note": "실제 이벤트는 `onBeforeExport` — 개별 페이지 `events/on-before-export.md` 로 확인. (예전 벤더 마이그레이션 부록은 `onBeforeDownload` 로 잘못 적고 있었으나 **그 부록은 삭제됐다**)"},
+    "OnBeforeExpand": {"v8": "onBeforeExpand", "args": {"Row": "row"}, "args_unmapped": ["Expand"], "note": "✅"},
+    "OnBeforeMovePage": {"v8": "onBeforeGoToPage", "args_unmapped": ["Current", "Move"], "note": "✅"},
+    "OnBeforePaste": {"v8": "onBeforePaste", "args_unmapped": ["text"]},
+    "OnBeforeSearch": {"v8": "onSearchStart", "note": "✅"},
+    "OnBeforeSort": {"v8": "onBeforeSort", "args": {"col": "col"}, "note": "✅"},
+    "OnBeforeTab": {"v8": "onKeyDown", "args_unmapped": ["row", "col", "oldRow", "oldCol"], "note": "✅"},
+    "OnButtonClick": {"v8": ["onClick", "onAfterClick"], "args": {"Row": "row", "Col": "col"}, "note": "★v8 에 Button 전용 이벤트가 없다 — 컬럼 가드가 필요하다."},
+    "OnCellDropEnd": {"v8": "onEndDragCell", "args": {"ToSheet": "tosheet", "ToRow": "torow", "ToCol": "tocol", "X": "x", "Y": "y"}, "args_unmapped": ["FromSheet", "FromRow", "FromCol"], "note": "✅"},
+    "OnChange": {"v8": "onAfterChange", "args": {"Row": "row", "Col": "col"}, "args_unmapped": ["Value", "OldValue", "RaiseFlag"], "note": "★`setValue()` 같은 외부 함수로 값이 바뀔 때는 v8 `onAfterChange` 가 **발생하지 않는다**. `OldValue`·`RaiseFlag` 는 대응이 없다."},
+    "OnChangeFilter": {"v8": "onAfterFilter", "note": "✅"},
+    "OnCheckAllEnd": {"v8": "onCheckAllFinish", "args": {"Col": "col"}, "args_unmapped": ["Value"], "note": "✅"},
+    "OnClick": {"v8": "onAfterClick", "args": {"Row": "row", "Col": "col"}, "args_unmapped": ["Value", "CellX", "CellY", "CellW", "CellH", "rowType"], "note": "★v8 `onClick` 은 발생 시점이 더 앞서므로 **`onAfterClick`** 을 쓴다. 셀 좌표 인자(`CellX`·`CellY`·`CellW`·`CellH`)는 v8 에 대응이 없다."},
+    "OnColumnSort": {"v8": "onAfterSort", "args_unmapped": ["Col", "Order"], "note": "✅"},
+    "OnDblClick": {"v8": "onDblClick", "args": {"Row": "row", "Col": "col"}, "args_unmapped": ["Value", "CellX", "CellY", "CellW", "CellH"]},
+    "OnDownFinish": {"v8": "onExportFinish", "args": {"result": "result"}, "args_unmapped": ["downloadType"], "note": "명칭 변경"},
+    "OnDragStart": {"v8": "onStartDrag", "args": {"Row": "row", "Col": "col"}, "note": "✅"},
+    "OnDropEnd": {"v8": "onEndDrag", "args": {"ToSheet": "tosheet", "ToRow": "torow", "X": "x", "Y": "y", "Type": "type"}, "args_unmapped": ["FromSheet", "FromRow"], "note": "✅"},
+    "OnEditValidation": {"v8": "onBeforeChange", "args": {"Row": "row", "Col": "col"}, "args_unmapped": ["Value"], "note": "✅"},
+    "OnFilterEnd": {"v8": "onAfterFilter", "args_unmapped": ["RowCnt", "FirstRow"], "note": "✅"},
+    "OnGroupFinish": {"v8": "onAfterGroup", "args_unmapped": ["Group"], "note": "✅"},
+    "OnGroupStart": {"v8": "onBeforeGroup", "args_unmapped": ["cols"], "note": "✅"},
+    "OnHScroll / OnVScroll": {"v8": "onScroll", "note": "단일 이벤트로 통합"},
+    "OnKeyUp / OnKeyDown": {"v8": ["onKeyUp", "onKeyDown"]},
+    "OnLoad": {"v8": "onRenderFirstFinish", "note": "★발생 시점 다름(최초 1회 발생만 동일)"},
+    "OnLoadData": {"v8": "onBeforeDataLoad", "args": {"Data": "data"}, "note": "v7 `Data` → v8 `evtParam.data`. ★`onBeforeDataLoad` 는 **row 객체가 아직 없다** — 행 객체를 쓰는 함수는 `onDataLoad` 에서 해야 한다."},
+    "OnLoadExcel / OnLoadText": {"v8": "onImportFinish", "note": "단일 이벤트로 통합"},
+    "OnLoadFileSelect": {"v8": "onSelectFile", "args": {"fileName": "filename"}, "args_unmapped": ["from"], "note": "✅"},
+    "OnMessage": {"v8": "onShowMessage", "args": {"isConfirm": "isConfirm"}, "args_unmapped": ["msg", "level"], "note": "✅"},
+    "OnMouseMove": {"v8": "onMouseMove", "args": {"X": "x", "Y": "y"}, "args_unmapped": ["Button", "Shift"], "note": "✅"},
+    "OnMouseUp": {"v8": "onMouseUp", "args": {"X": "x", "Y": "y"}, "args_unmapped": ["Button", "Shift"], "note": "✅"},
+    "OnMovePage": {"v8": "onBeforeGoToPage", "args_unmapped": ["Current", "Move"], "note": "명칭 변경"},
+    "OnPopupClick": {"v8": "onButtonClick", "args": {"Row": "row", "Col": "col"}, "note": "✅"},
+    "OnResize": {"v8": "onResize", "args": {"Width": "width", "Height": "height"}, "note": "✅"},
+    "OnRowSearchEnd": {"v8": "onRowLoad", "args": {"row": "row"}, "note": "명칭 변경"},
+    "OnSaveEnd": {"v8": "onAfterSave", "args": {"Response": "response"}, "args_unmapped": ["Code", "Msg", "StCode", "StMsg"], "note": "★저장 결과 코드·메시지(`Code`·`Msg`)가 v8 `onAfterSave` 인자에 없다. `response` 로 받아 직접 해석하거나 서버 응답 규약을 맞춰야 한다. v8 은 발생 시점도 다르다(`event-mapping.md` 참고)."},
+    "OnSearchEnd": {"v8": "onSearchFinish", "args_unmapped": ["Code", "Msg", "StCode", "StMsg", "Response"], "note": "★v8 `onSearchFinish` 는 **조회 실패 시 발생하지 않는다**(근거: v8 `events/on-search-finish.md`). v7 은 실패해도 발생해 `Code<0` 으로 오류를 처리했으므로, **오류 판정 로직은 `onBeforeDataLoad`/`onDataLoad` 로 옮긴다** — 그 이벤트가 `result`(0 이상 정상 / 음수 오류)와 `message` 를 준다(`events/on-data-load.md`). 전제: **서버 응답에 `IO` 속성이 있어야** `result`·`message` 가 전달된다(벤더 확인 2026-08-06). ★오류일 때 v8 은 **에러 메시지를 자동으로 표시**하므로 기존 `alert(Msg)` 는 중복이 된다 — 지울지 검토할 것. 정상 조회 시 메시지 표시가 필요하면 `onDataLoad` 에서 직접 처리한다. `Response` → `evtParam.response`."},
+    "OnSelectCell": {"v8": "onFocus", "args_unmapped": ["OldRow", "OldCol", "NewRow", "NewCol", "isDelete"], "note": "★v8 `onFocus` 는 이전/이후 위치 인자(`OldRow`·`NewRow` 등)를 그대로 주지 않는다. 포커스 이동 전후를 비교하던 코드는 다시 써야 한다."},
+    "OnSelectEnd": {"v8": "onSelectEnd", "args": {"Rows": "rows", "Cols": "cols"}, "note": "✅"},
+    "OnSelectMenu": {"v8": "onSelectMenu", "args": {"Col": "col"}, "args_unmapped": ["Text", "Code"]},
+    "OnSmartResize": {"v8": "onResize", "args": {"Width": "width", "Height": "height"}, "note": "⚠️"},
+    "OnSort": {"v8": "onAfterSort", "args_unmapped": ["Col", "SortOrder"], "note": "명칭 변경"},
+    "OnTreeChild": {"v8": "onBeforeExpand", "args": {"Row": "row"}, "note": "⚠️"},
+    "OnUserResize": {"v8": "onAfterColResize", "args": {"Col": "col"}, "args_unmapped": ["Width"], "note": "✅"},
+    "OnValidation": {"v8": "onBeforeSave", "args_unmapped": ["Row", "Col", "Value"], "note": "★v8 은 저장 직전 `onBeforeSave` 하나로 모아 검사한다 — 셀 단위 인자(`Row`·`Col`·`Value`)가 없으므로 검사 로직을 행 순회로 다시 쓴다."}
+  },
+  "method_option_unsupported": {
+    "_comment": "IBSheet8 이 **지원하지 않는** v7 메서드 옵션. 벤더 확인(2026-08-06). 엔진은 인자 객체 범위 안에서 이 키를 만나면 **고치지 않고 알린다** — 이름을 바꿔 봐야 대응이 없으므로 기능을 다른 방법으로 만들거나 포기해야 한다. v8 쪽 이름은 일부러 적지 않는다(v8 매뉴얼에서 비공개/점검으로 표시된 것들이다).",
+    "directDown2Excel": {
+      "AutoSizeColumn": "컬럼 너비 자동 조절은 v8 에서 지원하지 않는다(벤더 확인).",
+      "Mode": "다운로드 모드는 v8 에서 지원하지 않는다(벤더 확인). v8 에는 Status·DelCheck·Result 타입이 없다.",
+      "ReportXMLURL": "리포트 XML 방식은 v8 에서 지원하지 않는다(벤더 확인)."
+    },
+    "down2Excel": {
+      "AutoSizeColumn": "컬럼 너비 자동 조절은 v8 에서 지원하지 않는다(벤더 확인). 너비를 맞춰야 하면 다운로드 전에 시트 쪽 열 너비를 정하거나 `downCols` 로 열을 골라 받는다.",
+      "ExcludeSubSum": "소계/누계 제외 옵션은 v8 에서 지원하지 않는다(벤더 확인). 소계행을 빼고 받아야 하면 `downRows` 로 대상 행을 직접 지정한다.",
+      "Mode": "다운로드 모드는 v8 에서 지원하지 않는다(벤더 확인). ★v7 `Mode:-1` 의 목적(Status·DelCheck·Result 타입과 숨은 열 제외)은 **v8 에 그 타입들이 아예 없기 때문에** 사라진다 — 숨은 열만 빼려면 `downCols` 로 받을 열을 직접 지정한다.",
+      "Multipart": "전달 방식 선택은 v8 에서 지원하지 않는다(벤더 확인). ★벤더 설명: 데이터가 많을 때 multipart 로 보내면 **잘릴 수 있다** — 그래서 v8 은 이 선택지를 두지 않았다.",
+      "PrintSetup": "엑셀 **인쇄 설정은 v8 클라이언트 옵션으로 지원하지 않는다**(벤더 확인). 하위 항목(용지·여백·인쇄방향·흑백인쇄 등)도 함께 사라진다. ★대신 **서버 모듈에서 설정한다** — v8 매뉴얼 `appx/excel-server-troubleshooting.md` 의 `[ 사용자 환경 설정 #18 ]` 에 `ExcelPrintSetup` 예제가 있다(`setColorPrint`·용지 사이즈 등). 서버 모듈을 쓰지 않는 구성(`Cfg.AutoExcelMode:2`)이면 인쇄 설정을 만들 수 없다.",
+      "ReportXMLURL": "리포트 XML 방식은 v8 에서 지원하지 않는다(벤더 확인).",
+      "URL": "다운로드 URL 을 호출 인자로 주는 방식은 v8 에서 지원하지 않는다(벤더 확인). v8 은 초기화 `Cfg.Export.Down2ExcelUrl` 로 지정한다."
+    }
+  },
+  "method_option_keys": {
+    "_comment": "IBSheet8 은 **메서드 인자 객체의 옵션 키를 camelCase 로 쓴다**(초기화 속성은 PascalCase 그대로다). v7 은 옵션도 PascalCase 였다. 메서드 이름만 바꾸고 인자 객체를 그대로 두면 **v8 이 옵션을 전부 무시한다** — 오류 없이 파일명·시트명·디자인·병합·합계가 사라진다(2026-08-06 고객 화면 542개 전수 조사에서 발견). 키는 v8 메서드 이름 기준이다(safe_method_renames 가 먼저 돌기 때문). 엔진은 **호출의 인자 객체 범위 안에서만** 바꾼다 — `Sort`·`Mode`·`Col` 처럼 초기화 속성과 겹치는 이름이 있어 범위를 벗어나면 위험하다. 인자가 변수 참조면 바꾸지 않고 판단으로 넘긴다(OPTION_KEYS_INDIRECT).",
+    "_options_first_arg": ["down2Excel", "directDown2Excel", "down2Pdf", "down2Text", "loadExcel", "directLoadExcel", "loadText", "getSaveJson", "getSaveString", "makeSubTotal"],
+    "directDown2Excel": {"KeyFieldMark": "requiredMark", "ComboValidation": "comboValidation", "DownCols": "downCols", "DownCombo": "downCombo", "ExcelFontSize": "excelFontSize", "ExcelHeaderRowHeight": "excelHeaderRowHeight", "ExcelRowHeight": "excelRowHeight", "ExtendParam": "extendParam", "ExtendParamMethod": "extendParamMethod", "FileName": "fileName", "Merge": "merge", "Multipart": "multipart", "NumberFormatMode": "numberFormatMode", "ReqHeader": "reqHeader", "SheetDesign": "sheetDesign", "SheetName": "sheetName", "TitleAlign": "titleAlign", "TitleText": "titleText", "URL": "url", "UseXhr": "useXhr", "UserMerge": "userMerge"},
+    "directLoadExcel": {"EndRow": "endRow", "ExtendParam": "extendParam", "FileExt": "fileExt", "Mode": "mode", "ReqHeader": "reqHeader", "StartRow": "startRow", "UseXhr": "useXhr", "WorkSheetName": "workSheetName", "WorkSheetNo": "workSheetNo"},
+    "doSave": {"Col": "col", "Delim": "delim", "Param": "param", "Quest": "quest", "ReqHeader": "reqHeader", "Sync": "sync", "Url": "url", "UrlEncode": "urlEncode"},
+    "doSearch": {"Append": "append", "CallBack": "callback", "Param": "param", "ReqHeader": "reqHeader", "Sync": "sync"},
+    "doSearchPaging": {"CPage": "cPage", "OrderbyParam": "orderByParam", "PageParam": "pageParam", "Param": "param", "ReqHeader": "reqHeader", "Sync": "sync", "Url": "url"},
+    "down2Excel": {"KeyFieldMark": "requiredMark", "AllTypeToText": "allTypeToText", "AppendPrevSheet": "appendPrevSheet", "CheckBoxOffValue": "checkBoxOffValue", "CheckBoxOnValue": "checkBoxOnValue", "ComboValidation": "comboValidation", "DownCols": "downCols", "DownCombo": "downCombo", "DownHeader": "downHeader", "DownRows": "downRows", "DownSum": "downSum", "DownTreeHide": "downTreeHide", "ExcelFontFamily": "excelFontFamily", "ExcelFontSize": "excelFontSize", "ExcelHeaderRowHeight": "excelHeaderRowHeight", "ExcelRowHeight": "excelRowHeight", "ExcludeFooterRow": "excludeFooterRow", "ExtendParam": "extendParam", "ExtendParamMethod": "extendParamMethod", "FileName": "fileName", "FreezePane": "freezePane", "HiddenColumn": "hiddenColumn", "Merge": "merge", "NumberExMode": "numberExMode", "NumberFormatMode": "numberFormatMode", "NumberTypeToText": "numberTypeToText", "OnlyHeaderMerge": "onlyHeaderMerge", "ReqHeader": "reqHeader", "SheetDesign": "sheetDesign", "SheetName": "sheetName", "TextToGeneral": "textToGeneral", "TitleAlign": "titleAlign", "TitleText": "titleText", "UseXhr": "useXhr", "UserMerge": "userMerge", "WordWrap": "wordWrap"},
+    "down2Pdf": {"DownCols": "downCols", "Dpi": "dpi", "ExtendParam": "extendParam", "ExtendParamMethod": "extendParamMethod", "FileName": "fileName", "FontTo": "fontTo", "Paper": "paper", "ReqHeader": "reqHeader", "Title": "title", "TitleStyle": "titleStyle", "URL": "url", "UseXhr": "useXhr"},
+    "down2Text": {"ColDelim": "colDelim", "DownCols": "downCols", "DownHeader": "downHeader", "DownRows": "downRows", "DownSum": "downSum", "DownTreeHide": "downTreeHide", "ExtendParam": "extendParam", "FileName": "fileName", "ReqHeader": "reqHeader", "RowDelim": "rowDelim", "UseXhr": "useXhr"},
+    "getSaveString": {"Col": "col", "Delim": "delim", "Prefix": "prefix", "UrlEncode": "urlEncode"},
+    "loadExcel": {"Append": "append", "ColumnMapping": "columnMapping", "EndRow": "endRow", "FileExt": "fileExt", "MaxFileSize": "maxFileSize", "Mode": "mode", "ReqHeader": "reqHeader", "SkipEmptyRow": "skipEmptyRow", "StartCol": "startCol", "StartRow": "startRow", "UseXhr": "useXhr", "WorkSheetName": "workSheetName", "WorkSheetNo": "workSheetNo"},
+    "loadSearchData": {"Append": "append", "CallBack": "callback", "Sync": "sync"},
+    "loadText": {"Append": "append", "ColSeparator": "colSeparator", "Encoding": "encoding", "FileExt": "fileExt", "Mode": "mode", "ReqHeader": "reqHeader", "UseXhr": "useXhr"},
+    "makeSubTotal": {"AvgCols": "avgCols", "CaptionCol": "captionCol", "Mode": "mode", "Position": "position", "ShowCumulate": "showCumulate", "Sort": "sort", "StdCol": "stdCol", "SumCols": "sumCols"},
+    "showMenu": {"Row": "row"}
+  },
+  "v7_constants": {
+    "_comment": "ibsheetinfo.js 의 v7 전역 상수 → 숫자. **여기가 원본이다.** engine/init_extract.js 는 초기화 코드를 실행할 때 이 값을 샌드박스에 넣는다 — 넣지 않으면 `MergeSheet: msHeaderOnly + msPrevColumnMerge` 같은 산술식이 문자열 이어붙이기가 되어 값이 조용히 버려진다(2026-08-05 실제 고객 화면). engine/init_convert.py 도 이것을 읽는다. 텍스트 치환용 V7CONST_* 규칙과 일치하는지는 `migrate.py rules` 가 확인한다.",
+    "imeAuto": 0,
+    "imeEng": 2,
+    "imeHan": 1,
+    "msAll": 1,
+    "msBaseColumnMerge": 4,
+    "msFixedMerge": 3,
+    "msHeaderOnly": 5,
+    "msNone": 0,
+    "msPrevColumnMerge": 2,
+    "posBottom": 1,
+    "posTop": 0,
+    "sizeAdvancedAuto": 4,
+    "sizeAuto": 0,
+    "sizeNoBothScroll": 3,
+    "sizeNoHScroll": 2,
+    "sizeNoVScroll": 1,
+    "smClientPaging": 1,
+    "smGeneral": 0,
+    "smLazyLoad": 2,
+    "smServerPaging": 3,
+    "smServerPaging2": 4,
+    "vsAuto": 0,
+    "vsFixed": 1
+  },
+  "safe_method_renames": {
+    "_comment": "메서드명만 camelCase로 바뀌고 인자/반환 의미가 동일한 것. `\\.Method(` → `.method(` 형태로 안전 치환.",
+    "GetTotalRows": "getTotalRowCount",
+    "SetTotalRows": "setTotalRowCount",
+    "DoSearch": "doSearch",
+    "DoSearchPaging": "doSearchPaging",
+    "LoadSearchData": "loadSearchData",
+    "LoadExcel": "loadExcel",
+    "LoadExcelBuffer": "loadExcelBuffer",
+    "LoadText": "loadText",
+    "DoSave": "doSave",
+    "GetSaveJson": "getSaveJson",
+    "GetSaveString": "getSaveString",
+    "RemoveAll": "removeAll",
+    "DataMove": "moveRow",
+    "Down2Excel": "down2Excel",
+    "Down2ExcelBuffer": "down2ExcelBuffer",
+    "Down2Pdf": "down2Pdf",
+    "Down2Text": "down2Text",
+    "DirectDown2Excel": "directDown2Excel",
+    "DirectLoadExcel": "directLoadExcel",
+    "DoPrint": "doPrint",
+    "ClearFilterRow": "clearFilter",
+    "HideFilterRow": "hideFilterRow",
+    "ShowFilterRow": "showFilterRow",
+    "ShowSubSum": "makeSubTotal",
+    "HideSubSum": "removeSubTotal",
+    "GoToNextPage": "goToNextPage",
+    "GoToPrevPage": "goToPrevPage",
+    "GoToPageNum": "goToPageByIndex",
+    "HideGroupRow": "hideGroupRow",
+    "ShowGroupRow": "showGroupRow",
+    "ShowFindDialog": "showFindDialog",
+    "ShowPivotDialog": "showPivotDialog",
+    "ShowToolTip": "showTip",
+    "ShowTreeLevel": "showTreeLevel",
+    "MouseCol": "getMouseCol",
+    "ColDelete": "removeCol",
+    "ColInsert": "addCol",
+    "MoveColumnPos": "moveCol",
+    "GetChildRows": "getChildRows",
+    "GetNextSiblingRow": "getNextSiblingRow",
+    "GetPrevSiblingRow": "getPrevSiblingRow",
+    "GetDataFirstRow": "getFirstRow",
+    "GetDataLastRow": "getLastRow",
+    "GetScrollTop": "getScrollTop",
+    "SetScrollTop": "setScrollTop",
+    "GetScrollLeft": "getScrollLeft",
+    "SetScrollLeft": "setScrollLeft",
+    "GetEditText": "getEditText",
+    "SetEndEdit": "endEdit",
+    "SetBlur": "blur",
+    "ClearSelection": "clearSelection",
+    "SetSelectRange": "selectRange",
+    "RowTop": "getRowTop",
+    "ReturnCellData": "revertCell",
+    "ReturnData": "revertRow",
+    "DisposeSheet": "dispose",
+    "Version": "version",
+    "IsDataModified": "hasChangedData",
+    "GetSelectionRows": "getSelectedRows",
+    "GetGroupRow": "getGroupRows",
+    "ShowProcessDlg": "showMessage",
+    "HideProcessDlg": "hideMessage",
+    "_comment_2": "아래는 시그니처·반환이 모두 동일한 1:1 메서드. 출처 method-mapping.md ✅.",
+    "GetCurrentColInfo": "getCurrentInfo",
+    "SetCurrentColInfo": "setCurrentInfo",
+    "GetSubSumInfo": "getSubSumOptions",
+    "CreatePivotTable": "makePivotTable",
+    "ShowPivotTable": "makePivotTable",
+    "GetCountInfoElement": "getCountInfoElement",
+    "SetCountInfoElement": "setCountInfoElement",
+    "GetSelectionSummaryInfoElement": "getSelectionSummaryInfoElement",
+    "SetSelectionSummaryInfoElement": "setSelectionSummaryInfoElement",
+    "LoadSaveData": "applySaveResult",
+    "ShowColumnPopup": "showMenu",
+    "_comment_3": "검증 상태(2026-08-03). ★근거 등급을 구분한다 - (a)v8 개별 매뉴얼 페이지 (b)v8 플러그인 평문 소스 (c)벤더 직접 확인 = 근거로 쓴다 / (d)v7 ibsheet.js 문자열 = 단독 근거로 쓰지 않는다(문자열 패커라 공개 API 인지 내부 구현 이름인지 구분되지 않는다 - 실제로 그 방법으로 내부 전용 속성을 공개 속성으로 오판한 전례가 있다). HideFilterRow, Get/SetScrollTop, Get/SetScrollLeft, OnePageSort 는 벤더 확인 후 ★2026-08-05 v7 매뉴얼에 페이지가 추가돼 문서 근거가 생겼다(위키 갱신분 39개 반영). GetRowStatus 는 여전히 페이지가 없고 벤더 확인 근거만 있다. GetRowStatus 는 인자(index -> 행 객체)와 반환값(R/U/I/D -> \"\"/Changed/Added/Deleted)이 모두 달라 자동 치환 대상이 아니다 -> flag GETROWSTATUS. ★★부록의 API 이름 자체가 틀릴 수도 있다 - 부록이 v7 CurrentColInfo 의 v8 대응을 getCurrentColInfo/setCurrentColInfo 로 적고 존재하지 않는 페이지를 링크했으나, 실제 v8 함수명은 getCurrentInfo/setCurrentInfo 다(funcs/core/get-current-info.md). 부록 이름을 그대로 규칙에 옮기지 말고 개별 페이지 실존을 확인할 것.",
+    "_comment_4": "★런타임 의존 주의 — 아래는 자동 치환되지만 IBSheet8 본체에 없고 플러그인 소속이다. 변환 결과가 호출하면 그 플러그인을 웹앱에 함께 로드해야 하고, 빠뜨리면 검증 3종은 PASS인데 브라우저에서 '... is not a function' 으로 죽는다(정적 검사로는 못 잡는다). plugins/ibsheet-excel.js : Down2Excel, Down2Pdf, Down2Text, LoadExcel, LoadText, DirectDown2Excel, DirectLoadExcel, Down2ExcelBuffer, LoadExcelBuffer (★이들은 서버 모듈 설치도 필요 — 스크립트만으로는 동작 안 함). plugins/ibsheet-dialog.js : ShowFindDialog, ShowPivotDialog. ★*Buffer 계열은 개별 매뉴얼 페이지에 플러그인 문구가 없지만 down2Excel/loadExcel 호출을 감싸는 래퍼(Buffer(true) -> 실제 호출 -> Buffer(false) 에서 전송)라 같은 의존이 있다. migrate.py convert 가 변환 결과를 보고 안내한다. AGENTS.md 「런타임 의존」 참조."
+  },
+  "value_transforms": [
+    {
+      "_comment": "── v7 전역 상수 정규화(★값 규칙보다 먼저): IBSheet7 은 ibsheetinfo.js 에서 msAll·smLazyLoad 같은 전역 상수를 정의했고 고객 코드가 숫자 대신 이 이름을 쓴다. v8 에는 그 파일이 없어 그대로 두면 런타임 ReferenceError 이고, 이름 표기 때문에 값 기반 규칙(SearchMode:2→0 등)도 걸리지 않는다. ★무맥락 치환은 위험하다 — 객체 키 {posTop: 9} 를 {0: 9} 로 망가뜨린 전례가 있어 속성/인자 자리로 한정한다. ──",
+      "id": "V7CONST_MSNONE",
+      "desc": "v7 전역 상수 msNone → 0 (MergeSheet 값 자리에서만 치환). ibsheetinfo.js 정의값이고 v8 에는 그 파일이 없다. ★객체 키·변수명·삼항 중간 등 다른 자리는 건드리지 않고 V7CONST_RESIDUE 로 검토에 넘긴다.",
+      "pattern": "([\\\"']?)MergeSheet\\1(\\s*:\\s*)msNone(?![A-Za-z0-9_])",
+      "replacement": "\\1MergeSheet\\1\\g<2>0"
+    },
+    {
+      "id": "V7CONST_MSNONE_ARG_SETMERGESHEET",
+      "desc": "v7 전역 상수 msNone → 0 (SetMergeSheet() 인자 자리).",
+      "pattern": "(\\.\\s*SetMergeSheet\\s*\\(\\s*)msNone(?![A-Za-z0-9_])",
+      "replacement": "\\g<1>0"
+    },
+    {
+      "id": "V7CONST_MSALL",
+      "desc": "v7 전역 상수 msAll → 1 (MergeSheet 값 자리에서만 치환). ibsheetinfo.js 정의값이고 v8 에는 그 파일이 없다. ★객체 키·변수명·삼항 중간 등 다른 자리는 건드리지 않고 V7CONST_RESIDUE 로 검토에 넘긴다.",
+      "pattern": "([\\\"']?)MergeSheet\\1(\\s*:\\s*)msAll(?![A-Za-z0-9_])",
+      "replacement": "\\1MergeSheet\\1\\g<2>1"
+    },
+    {
+      "id": "V7CONST_MSALL_ARG_SETMERGESHEET",
+      "desc": "v7 전역 상수 msAll → 1 (SetMergeSheet() 인자 자리).",
+      "pattern": "(\\.\\s*SetMergeSheet\\s*\\(\\s*)msAll(?![A-Za-z0-9_])",
+      "replacement": "\\g<1>1"
+    },
+    {
+      "id": "V7CONST_MSPREVCOLUMNMERGE",
+      "desc": "v7 전역 상수 msPrevColumnMerge → 2 (MergeSheet 값 자리에서만 치환). ibsheetinfo.js 정의값이고 v8 에는 그 파일이 없다. ★객체 키·변수명·삼항 중간 등 다른 자리는 건드리지 않고 V7CONST_RESIDUE 로 검토에 넘긴다.",
+      "pattern": "([\\\"']?)MergeSheet\\1(\\s*:\\s*)msPrevColumnMerge(?![A-Za-z0-9_])",
+      "replacement": "\\1MergeSheet\\1\\g<2>2"
+    },
+    {
+      "id": "V7CONST_MSPREVCOLUMNMERGE_ARG_SETMERGESHEET",
+      "desc": "v7 전역 상수 msPrevColumnMerge → 2 (SetMergeSheet() 인자 자리).",
+      "pattern": "(\\.\\s*SetMergeSheet\\s*\\(\\s*)msPrevColumnMerge(?![A-Za-z0-9_])",
+      "replacement": "\\g<1>2"
+    },
+    {
+      "id": "V7CONST_MSFIXEDMERGE",
+      "desc": "v7 전역 상수 msFixedMerge → 3 (MergeSheet 값 자리에서만 치환). ibsheetinfo.js 정의값이고 v8 에는 그 파일이 없다. ★객체 키·변수명·삼항 중간 등 다른 자리는 건드리지 않고 V7CONST_RESIDUE 로 검토에 넘긴다.",
+      "pattern": "([\\\"']?)MergeSheet\\1(\\s*:\\s*)msFixedMerge(?![A-Za-z0-9_])",
+      "replacement": "\\1MergeSheet\\1\\g<2>3"
+    },
+    {
+      "id": "V7CONST_MSFIXEDMERGE_ARG_SETMERGESHEET",
+      "desc": "v7 전역 상수 msFixedMerge → 3 (SetMergeSheet() 인자 자리).",
+      "pattern": "(\\.\\s*SetMergeSheet\\s*\\(\\s*)msFixedMerge(?![A-Za-z0-9_])",
+      "replacement": "\\g<1>3"
+    },
+    {
+      "id": "V7CONST_MSBASECOLUMNMERGE",
+      "desc": "v7 전역 상수 msBaseColumnMerge → 4 (MergeSheet 값 자리에서만 치환). ibsheetinfo.js 정의값이고 v8 에는 그 파일이 없다. ★객체 키·변수명·삼항 중간 등 다른 자리는 건드리지 않고 V7CONST_RESIDUE 로 검토에 넘긴다.",
+      "pattern": "([\\\"']?)MergeSheet\\1(\\s*:\\s*)msBaseColumnMerge(?![A-Za-z0-9_])",
+      "replacement": "\\1MergeSheet\\1\\g<2>4"
+    },
+    {
+      "id": "V7CONST_MSBASECOLUMNMERGE_ARG_SETMERGESHEET",
+      "desc": "v7 전역 상수 msBaseColumnMerge → 4 (SetMergeSheet() 인자 자리).",
+      "pattern": "(\\.\\s*SetMergeSheet\\s*\\(\\s*)msBaseColumnMerge(?![A-Za-z0-9_])",
+      "replacement": "\\g<1>4"
+    },
+    {
+      "id": "V7CONST_MSHEADERONLY",
+      "desc": "v7 전역 상수 msHeaderOnly → 5 (MergeSheet 값 자리에서만 치환). ibsheetinfo.js 정의값이고 v8 에는 그 파일이 없다. ★객체 키·변수명·삼항 중간 등 다른 자리는 건드리지 않고 V7CONST_RESIDUE 로 검토에 넘긴다.",
+      "pattern": "([\\\"']?)MergeSheet\\1(\\s*:\\s*)msHeaderOnly(?![A-Za-z0-9_])",
+      "replacement": "\\1MergeSheet\\1\\g<2>5"
+    },
+    {
+      "id": "V7CONST_MSHEADERONLY_ARG_SETMERGESHEET",
+      "desc": "v7 전역 상수 msHeaderOnly → 5 (SetMergeSheet() 인자 자리).",
+      "pattern": "(\\.\\s*SetMergeSheet\\s*\\(\\s*)msHeaderOnly(?![A-Za-z0-9_])",
+      "replacement": "\\g<1>5"
+    },
+    {
+      "id": "V7CONST_SMGENERAL",
+      "desc": "v7 전역 상수 smGeneral → 0 (SearchMode 값 자리에서만 치환). ibsheetinfo.js 정의값이고 v8 에는 그 파일이 없다. ★객체 키·변수명·삼항 중간 등 다른 자리는 건드리지 않고 V7CONST_RESIDUE 로 검토에 넘긴다.",
+      "pattern": "([\\\"']?)SearchMode\\1(\\s*:\\s*)smGeneral(?![A-Za-z0-9_])",
+      "replacement": "\\1SearchMode\\1\\g<2>0"
+    },
+    {
+      "id": "V7CONST_SMGENERAL_ARG_SETSEARCHMODE",
+      "desc": "v7 전역 상수 smGeneral → 0 (SetSearchMode() 인자 자리).",
+      "pattern": "(\\.\\s*SetSearchMode\\s*\\(\\s*)smGeneral(?![A-Za-z0-9_])",
+      "replacement": "\\g<1>0"
+    },
+    {
+      "id": "V7CONST_SMCLIENTPAGING",
+      "desc": "v7 전역 상수 smClientPaging → 1 (SearchMode 값 자리에서만 치환). ibsheetinfo.js 정의값이고 v8 에는 그 파일이 없다. ★객체 키·변수명·삼항 중간 등 다른 자리는 건드리지 않고 V7CONST_RESIDUE 로 검토에 넘긴다.",
+      "pattern": "([\\\"']?)SearchMode\\1(\\s*:\\s*)smClientPaging(?![A-Za-z0-9_])",
+      "replacement": "\\1SearchMode\\1\\g<2>1"
+    },
+    {
+      "id": "V7CONST_SMCLIENTPAGING_ARG_SETSEARCHMODE",
+      "desc": "v7 전역 상수 smClientPaging → 1 (SetSearchMode() 인자 자리).",
+      "pattern": "(\\.\\s*SetSearchMode\\s*\\(\\s*)smClientPaging(?![A-Za-z0-9_])",
+      "replacement": "\\g<1>1"
+    },
+    {
+      "id": "V7CONST_SMLAZYLOAD",
+      "desc": "v7 전역 상수 smLazyLoad → 2 (SearchMode 값 자리에서만 치환). ibsheetinfo.js 정의값이고 v8 에는 그 파일이 없다. ★객체 키·변수명·삼항 중간 등 다른 자리는 건드리지 않고 V7CONST_RESIDUE 로 검토에 넘긴다.",
+      "pattern": "([\\\"']?)SearchMode\\1(\\s*:\\s*)smLazyLoad(?![A-Za-z0-9_])",
+      "replacement": "\\1SearchMode\\1\\g<2>2"
+    },
+    {
+      "id": "V7CONST_SMLAZYLOAD_ARG_SETSEARCHMODE",
+      "desc": "v7 전역 상수 smLazyLoad → 2 (SetSearchMode() 인자 자리).",
+      "pattern": "(\\.\\s*SetSearchMode\\s*\\(\\s*)smLazyLoad(?![A-Za-z0-9_])",
+      "replacement": "\\g<1>2"
+    },
+    {
+      "id": "V7CONST_SMSERVERPAGING",
+      "desc": "v7 전역 상수 smServerPaging → 3 (SearchMode 값 자리에서만 치환). ibsheetinfo.js 정의값이고 v8 에는 그 파일이 없다. ★객체 키·변수명·삼항 중간 등 다른 자리는 건드리지 않고 V7CONST_RESIDUE 로 검토에 넘긴다.",
+      "pattern": "([\\\"']?)SearchMode\\1(\\s*:\\s*)smServerPaging(?![A-Za-z0-9_])",
+      "replacement": "\\1SearchMode\\1\\g<2>3"
+    },
+    {
+      "id": "V7CONST_SMSERVERPAGING_ARG_SETSEARCHMODE",
+      "desc": "v7 전역 상수 smServerPaging → 3 (SetSearchMode() 인자 자리).",
+      "pattern": "(\\.\\s*SetSearchMode\\s*\\(\\s*)smServerPaging(?![A-Za-z0-9_])",
+      "replacement": "\\g<1>3"
+    },
+    {
+      "id": "V7CONST_SMSERVERPAGING2",
+      "desc": "v7 전역 상수 smServerPaging2 → 4 (SearchMode 값 자리에서만 치환). ibsheetinfo.js 정의값이고 v8 에는 그 파일이 없다. ★객체 키·변수명·삼항 중간 등 다른 자리는 건드리지 않고 V7CONST_RESIDUE 로 검토에 넘긴다.",
+      "pattern": "([\\\"']?)SearchMode\\1(\\s*:\\s*)smServerPaging2(?![A-Za-z0-9_])",
+      "replacement": "\\1SearchMode\\1\\g<2>4"
+    },
+    {
+      "id": "V7CONST_SMSERVERPAGING2_ARG_SETSEARCHMODE",
+      "desc": "v7 전역 상수 smServerPaging2 → 4 (SetSearchMode() 인자 자리).",
+      "pattern": "(\\.\\s*SetSearchMode\\s*\\(\\s*)smServerPaging2(?![A-Za-z0-9_])",
+      "replacement": "\\g<1>4"
+    },
+    {
+      "id": "V7CONST_SIZEAUTO",
+      "desc": "v7 전역 상수 sizeAuto → 0 (SizeMode 값 자리에서만 치환). ibsheetinfo.js 정의값이고 v8 에는 그 파일이 없다. ★객체 키·변수명·삼항 중간 등 다른 자리는 건드리지 않고 V7CONST_RESIDUE 로 검토에 넘긴다.",
+      "pattern": "([\\\"']?)SizeMode\\1(\\s*:\\s*)sizeAuto(?![A-Za-z0-9_])",
+      "replacement": "\\1SizeMode\\1\\g<2>0"
+    },
+    {
+      "id": "V7CONST_SIZENOVSCROLL",
+      "desc": "v7 전역 상수 sizeNoVScroll → 1 (SizeMode 값 자리에서만 치환). ibsheetinfo.js 정의값이고 v8 에는 그 파일이 없다. ★객체 키·변수명·삼항 중간 등 다른 자리는 건드리지 않고 V7CONST_RESIDUE 로 검토에 넘긴다.",
+      "pattern": "([\\\"']?)SizeMode\\1(\\s*:\\s*)sizeNoVScroll(?![A-Za-z0-9_])",
+      "replacement": "\\1SizeMode\\1\\g<2>1"
+    },
+    {
+      "id": "V7CONST_SIZENOHSCROLL",
+      "desc": "v7 전역 상수 sizeNoHScroll → 2 (SizeMode 값 자리에서만 치환). ibsheetinfo.js 정의값이고 v8 에는 그 파일이 없다. ★객체 키·변수명·삼항 중간 등 다른 자리는 건드리지 않고 V7CONST_RESIDUE 로 검토에 넘긴다.",
+      "pattern": "([\\\"']?)SizeMode\\1(\\s*:\\s*)sizeNoHScroll(?![A-Za-z0-9_])",
+      "replacement": "\\1SizeMode\\1\\g<2>2"
+    },
+    {
+      "id": "V7CONST_SIZENOBOTHSCROLL",
+      "desc": "v7 전역 상수 sizeNoBothScroll → 3 (SizeMode 값 자리에서만 치환). ibsheetinfo.js 정의값이고 v8 에는 그 파일이 없다. ★객체 키·변수명·삼항 중간 등 다른 자리는 건드리지 않고 V7CONST_RESIDUE 로 검토에 넘긴다.",
+      "pattern": "([\\\"']?)SizeMode\\1(\\s*:\\s*)sizeNoBothScroll(?![A-Za-z0-9_])",
+      "replacement": "\\1SizeMode\\1\\g<2>3"
+    },
+    {
+      "id": "V7CONST_SIZEADVANCEDAUTO",
+      "desc": "v7 전역 상수 sizeAdvancedAuto → 4 (SizeMode 값 자리에서만 치환). ibsheetinfo.js 정의값이고 v8 에는 그 파일이 없다. ★객체 키·변수명·삼항 중간 등 다른 자리는 건드리지 않고 V7CONST_RESIDUE 로 검토에 넘긴다.",
+      "pattern": "([\\\"']?)SizeMode\\1(\\s*:\\s*)sizeAdvancedAuto(?![A-Za-z0-9_])",
+      "replacement": "\\1SizeMode\\1\\g<2>4"
+    },
+    {
+      "id": "V7CONST_IMEAUTO",
+      "desc": "v7 전역 상수 imeAuto → 0 (BasicImeMode 값 자리에서만 치환). ibsheetinfo.js 정의값이고 v8 에는 그 파일이 없다. ★객체 키·변수명·삼항 중간 등 다른 자리는 건드리지 않고 V7CONST_RESIDUE 로 검토에 넘긴다.",
+      "pattern": "([\\\"']?)BasicImeMode\\1(\\s*:\\s*)imeAuto(?![A-Za-z0-9_])",
+      "replacement": "\\1BasicImeMode\\1\\g<2>0"
+    },
+    {
+      "id": "V7CONST_IMEHAN",
+      "desc": "v7 전역 상수 imeHan → 1 (BasicImeMode 값 자리에서만 치환). ibsheetinfo.js 정의값이고 v8 에는 그 파일이 없다. ★객체 키·변수명·삼항 중간 등 다른 자리는 건드리지 않고 V7CONST_RESIDUE 로 검토에 넘긴다.",
+      "pattern": "([\\\"']?)BasicImeMode\\1(\\s*:\\s*)imeHan(?![A-Za-z0-9_])",
+      "replacement": "\\1BasicImeMode\\1\\g<2>1"
+    },
+    {
+      "id": "V7CONST_IMEENG",
+      "desc": "v7 전역 상수 imeEng → 2 (BasicImeMode 값 자리에서만 치환). ibsheetinfo.js 정의값이고 v8 에는 그 파일이 없다. ★객체 키·변수명·삼항 중간 등 다른 자리는 건드리지 않고 V7CONST_RESIDUE 로 검토에 넘긴다.",
+      "pattern": "([\\\"']?)BasicImeMode\\1(\\s*:\\s*)imeEng(?![A-Za-z0-9_])",
+      "replacement": "\\1BasicImeMode\\1\\g<2>2"
+    },
+    {
+      "id": "V7CONST_POSTOP",
+      "desc": "v7 전역 상수 posTop → 0 (SumPosition 값 자리에서만 치환). ibsheetinfo.js 정의값이고 v8 에는 그 파일이 없다. ★객체 키·변수명·삼항 중간 등 다른 자리는 건드리지 않고 V7CONST_RESIDUE 로 검토에 넘긴다.",
+      "pattern": "([\\\"']?)SumPosition\\1(\\s*:\\s*)posTop(?![A-Za-z0-9_])",
+      "replacement": "\\1SumPosition\\1\\g<2>0"
+    },
+    {
+      "id": "V7CONST_POSBOTTOM",
+      "desc": "v7 전역 상수 posBottom → 1 (SumPosition 값 자리에서만 치환). ibsheetinfo.js 정의값이고 v8 에는 그 파일이 없다. ★객체 키·변수명·삼항 중간 등 다른 자리는 건드리지 않고 V7CONST_RESIDUE 로 검토에 넘긴다.",
+      "pattern": "([\\\"']?)SumPosition\\1(\\s*:\\s*)posBottom(?![A-Za-z0-9_])",
+      "replacement": "\\1SumPosition\\1\\g<2>1"
+    },
+    {
+      "id": "V7CONST_VSAUTO",
+      "desc": "v7 전역 상수 vsAuto → 0 (VScrollMode 값 자리에서만 치환). ibsheetinfo.js 정의값이고 v8 에는 그 파일이 없다. ★객체 키·변수명·삼항 중간 등 다른 자리는 건드리지 않고 V7CONST_RESIDUE 로 검토에 넘긴다.",
+      "pattern": "([\\\"']?)VScrollMode\\1(\\s*:\\s*)vsAuto(?![A-Za-z0-9_])",
+      "replacement": "\\1VScrollMode\\1\\g<2>0"
+    },
+    {
+      "id": "V7CONST_VSFIXED",
+      "desc": "v7 전역 상수 vsFixed → 1 (VScrollMode 값 자리에서만 치환). ibsheetinfo.js 정의값이고 v8 에는 그 파일이 없다. ★객체 키·변수명·삼항 중간 등 다른 자리는 건드리지 않고 V7CONST_RESIDUE 로 검토에 넘긴다.",
+      "pattern": "([\\\"']?)VScrollMode\\1(\\s*:\\s*)vsFixed(?![A-Za-z0-9_])",
+      "replacement": "\\1VScrollMode\\1\\g<2>1"
+    },
+    {
+      "id": "SEARCHMODE_2_TO_0",
+      "desc": "SearchMode:2 → 0 (★의도된 규칙 — IBSheet8 최대 강점인 FastLoad 가상 스크롤로 상향). v7 2(smLazyLoad)와 v8 2(LazyLoad)는 동일하므로 이는 '동일 매핑'이 아니라 성능 개선 목적의 의도적 모드 변경이다. FastLoad 제약은 CFG_SEARCHMODE_0 flag 에서 검토한다. ★값 자리에 따옴표가 붙은 표기(SearchMode:\"2\" · Hidden:\"false\")도 잡는다 - 실제 고객 코드에서 발견돼 2026-08-04 보강했다.",
+      "pattern": "(?<![\\w$])([\"']?)SearchMode\\1\\s*:\\s*([\"']?)2\\2(?![0-9])",
+      "replacement": "\\1SearchMode\\1: \\g<2>0\\2"
+    },
+    {
+      "id": "EDIT_TO_CANEDIT",
+      "desc": "Col 의 Edit → CanEdit. 근거: v7 funcs/init/InitColumns.md \"편집가능 여부\"(Boolean) / v8 props/col/can-edit.md \"해당 열의 편집 가능 여부\". ★v8 우선순위는 Cell > Row > Col 이고 default 는 1 이다. v7 EditLen 은 별개로 Size 가 된다(EDITLEN_TO_SIZE).",
+      "pattern": "(?<![\\w$])([\"']?)Edit\\1(\\s*:)",
+      "replacement": "\\1CanEdit\\1\\2"
+    },
+    {
+      "id": "ALLOWNULL_TO_CANEMPTY",
+      "desc": "Col 의 AllowNull → CanEmpty. 근거: v7 funcs/init/InitColumns.md \"숫자계열 컬럼에 빈값 허용 여부\" / v8 props/col/can-empty.md (Int·Float·Bool·Date 에서 빈값 표시 허용). 매핑 문서에는 있었으나 규칙에 빠져 있었다.",
+      "pattern": "(?<![\\w$])([\"']?)AllowNull\\1(\\s*:)",
+      "replacement": "\\1CanEmpty\\1\\2"
+    },
+    {
+      "id": "EDITLEN_TO_SIZE",
+      "desc": "Col 의 EditLen → Size. 근거: v8 props/col/size.md \"열에 입력가능한 글자수\" · 벤더 마이그레이션 표 migration/migration-02-02.md 117행. ★cfg.UnicodeByteMode 를 켜면 한글을 바이트로 계산하니 v7 과 기준이 같은지 확인할 것. v7 의 FullInput(전체 길이 입력 강제)은 v8 대응이 없다.",
+      "pattern": "(?<![\\w$])([\"']?)EditLen\\1(\\s*:)",
+      "replacement": "\\1Size\\1\\2"
+    },
+    {
+      "id": "KEYFIELD_TO_REQUIRED",
+      "desc": "Col 의 KeyField → Required. 근거: v7 funcs/init/InitColumns.md \"필수 입력 여부\"(Boolean) / v8 props/col/required.md \"데이터의 필수 입력 항목 여부\". 짝 속성 KeyFieldPosition → RequiredPosition 은 이미 있었는데 이 속성 자체가 빠져 있었다(2026-08-05 실제 고객 화면에서 발견).",
+      "pattern": "(?<![\\w$])([\"']?)KeyField\\1(\\s*:)",
+      "replacement": "\\1Required\\1\\2"
+    },
+    {
+      "id": "CALCLOGIC_TO_FORMULA",
+      "desc": "Col 의 CalcLogic → Formula. 근거: v8 props/col/formula.md(엑셀 유사 수식) · 벤더 마이그레이션 표 migration/migration-02-02.md. 매핑 문서에는 있었으나 규칙에 빠져 있었다. ★v8 Formula 는 셀 값 외에 속성 계산까지 가능해 기능이 더 넓다 — 식 문법이 그대로 통하는지 결과를 확인할 것.",
+      "pattern": "(?<![\\w$])([\"']?)CalcLogic\\1(\\s*:)",
+      "replacement": "\\1Formula\\1\\2"
+    },
+    {
+      "id": "SAVENAME_TO_NAME",
+      "desc": "Col 정의의 SaveName → Name (v8 개별 페이지 props/col/name.md 확인. ★예전 근거였던 벤더 마이그레이션 요약 부록은 없어졌다 — 2026-08-11). ★v8에서 Name은 필수이며 한 시트 내 중복 불가 — Col 정의에 Name이 없는 컬럼과 중복 Name 은 별도 확인.",
+      "pattern": "(?<![\\w$])([\"']?)SaveName\\1(\\s*:)",
+      "replacement": "\\1Name\\1\\2"
+    },
+    {
+      "id": "UPDATEEDIT_TO_CHANGEEDIT",
+      "desc": "UpdateEdit → ChangeEdit",
+      "pattern": "(?<![\\w$])([\"']?)UpdateEdit\\1(\\s*:)",
+      "replacement": "\\1ChangeEdit\\1\\2"
+    },
+    {
+      "id": "INSERTEDIT_TO_ADDEDIT",
+      "desc": "InsertEdit → AddEdit",
+      "pattern": "(?<![\\w$])([\"']?)InsertEdit\\1(\\s*:)",
+      "replacement": "\\1AddEdit\\1\\2"
+    },
+    {
+      "id": "TYPE_COMBO_TO_ENUM",
+      "desc": "Type:\"Combo\" → Type:\"Enum\" (conventions.md §3). Enum/EnumKeys(| 접두사) 설정은 별도 판단 필요.",
+      "pattern": "(?<![\\w$])([\"']?)Type\\1\\s*:\\s*([\"'])Combo\\2",
+      "replacement": "\\1Type\\1: \\2Enum\\2"
+    },
+    {
+      "id": "TYPE_CHECKBOX_TO_BOOL",
+      "desc": "Type:\"CheckBox\" → Type:\"Bool\" (conventions.md §3).",
+      "pattern": "(?<![\\w$])([\"']?)Type\\1\\s*:\\s*([\"'])CheckBox\\2",
+      "replacement": "\\1Type\\1: \\2Bool\\2"
+    },
+    {
+      "_comment": "── Cfg 속성명 단순 변경 (property-mapping.md ✅ '이름 변경'). 충돌·구조변경 없는 1:1만. Cfg→Cfg 동일 컨텍스트. ──",
+      "id": "CFG_CACHEPAGECOUNT",
+      "desc": "Cfg CachePageCount → MaxPages",
+      "pattern": "(?<![\\w$])([\"']?)CachePageCount\\1(\\s*:)",
+      "replacement": "\\1MaxPages\\1\\2"
+    },
+    {
+      "id": "CFG_CLIPPASTEMODE",
+      "desc": "Cfg ClipPasteMode → PasteFocused",
+      "pattern": "(?<![\\w$])([\"']?)ClipPasteMode\\1(\\s*:)",
+      "replacement": "\\1PasteFocused\\1\\2"
+    },
+    {
+      "id": "CFG_COMBOMAXHEIGHT",
+      "desc": "Cfg ComboMaxHeight → MenuMaxHeight",
+      "pattern": "(?<![\\w$])([\"']?)ComboMaxHeight\\1(\\s*:)",
+      "replacement": "\\1MenuMaxHeight\\1\\2"
+    },
+    {
+      "id": "CFG_EXPORTMODE",
+      "desc": "Cfg ExportMode → AutoExcelMode",
+      "pattern": "(?<![\\w$])([\"']?)ExportMode\\1(\\s*:)",
+      "replacement": "\\1AutoExcelMode\\1\\2"
+    },
+    {
+      "id": "CFG_FOCUSEDITMODE",
+      "desc": "Cfg FocusEditMode → InEditMode (속성). 메서드 SetFocusEditMode는 flag 처리.",
+      "pattern": "(?<![\\w$])([\"']?)FocusEditMode\\1(\\s*:)",
+      "replacement": "\\1InEditMode\\1\\2"
+    },
+    {
+      "id": "CFG_KEYFIELDPOSITION",
+      "desc": "Cfg KeyFieldPosition → RequiredPosition",
+      "pattern": "(?<![\\w$])([\"']?)KeyFieldPosition\\1(\\s*:)",
+      "replacement": "\\1RequiredPosition\\1\\2"
+    },
+    {
+      "id": "CFG_MOUSEHOVERMODE",
+      "desc": "Cfg MouseHoverMode → Hover",
+      "pattern": "(?<![\\w$])([\"']?)MouseHoverMode\\1(\\s*:)",
+      "replacement": "\\1Hover\\1\\2"
+    },
+    {
+      "id": "CFG_TOOLTIPMODE",
+      "desc": "Cfg ToolTipMode → StandardTip",
+      "pattern": "(?<![\\w$])([\"']?)ToolTipMode\\1(\\s*:)",
+      "replacement": "\\1StandardTip\\1\\2"
+    },
+    {
+      "id": "CFG_UNICODEBYTE",
+      "desc": "Cfg UnicodeByte → UnicodeByteMode (:앵커로 UnicodeByteMode 오매치 방지)",
+      "pattern": "(?<![\\w$])([\"']?)UnicodeByte\\1(\\s*:)",
+      "replacement": "\\1UnicodeByteMode\\1\\2"
+    },
+    {
+      "id": "CFG_UPDATEMERGECELLS",
+      "desc": "Cfg UpdateMergeCells → MergeCellsMatch",
+      "pattern": "(?<![\\w$])([\"']?)UpdateMergeCells\\1(\\s*:)",
+      "replacement": "\\1MergeCellsMatch\\1\\2"
+    },
+    {
+      "id": "CFG_WHEELSCROLLSIZE",
+      "desc": "Cfg WheelScrollSize → WheelScrollCount (v8 매뉴얼 props/cfg/wheel-scroll-count.md 확인. 이전 규칙이 'WhellScrollCount'로 오타 생성 → v8이 무시하던 버그 수정)",
+      "pattern": "(?<![\\w$])([\"']?)WheelScrollSize\\1(\\s*:)",
+      "replacement": "\\1WheelScrollCount\\1\\2"
+    },
+    {
+      "id": "CFG_PAGE_TO_PAGELENGTH",
+      "desc": "Cfg Page → PageLength. v7 'Page: 한번에 표시할 행의 개수(default 20)' 와 v8 PageLength(default 20) 가 의미·기본값이 같다. 이름만 바뀐다.",
+      "pattern": "(?<![\\w$])([\"']?)Page\\1(\\s*:)",
+      "replacement": "\\1PageLength\\1\\2"
+    }
+  ],
+  "flag_for_review": [
+    {
+      "id": "CLEARHEADERCHECK",
+      "desc": "ClearHeaderCheck() → **v8 에 같은 함수가 없다.** 헤더 행 셀의 `Checked` 를 `0` 으로 되돌린다(데이터 값은 바꾸지 않는다). `Checked` 는 **cell 단위**라 열마다 지정해야 한다 — 헤더 행에서 체크 아이콘이 있는 열만 순회한다: `const header = sheet.getHeaderRows().at(-1); sheet.getCols().forEach(c => { if (sheet.getAttribute(header, c, \"Icon\") == \"Check\") sheet.setAttribute(header, c, \"Checked\", 0); });` (근거: v8 `migration/migration-04.md` 의 ClearHeaderCheck 행)",
+      "pattern": "\\.ClearHeaderCheck\\s*\\("
+    },
+    {
+      "id": "BASICIMEMODE",
+      "desc": "GetBasicImeMode()/SetBasicImeMode(mode) → **v8 미지원**(벤더 마이그레이션 표 `migration/migration-04.md` 의 BasicImeMode 행: \"지원안함\"). v7 도 **IE 브라우저에서만 동작**하던 기능이라 최신 브라우저에서는 이미 효과가 없다. 한/영 입력 제어가 꼭 필요하면 CSS `ime-mode` 는 표준에서 빠졌으므로 입력값 검증(`EditMask` 등)으로 대체를 검토한다.",
+      "pattern": "\\.(?:Get|Set)BasicImeMode\\s*\\("
+    },
+    {
+      "id": "SETIMAGELIST",
+      "desc": "GetImageList()/SetImageList(index, path) → **v8 에 대응이 없다.** v7 은 이미지 경로에 Index 를 매겨 쓰는 방식이었다. v8 은 컬럼에 이미지를 직접 지정한다 — `Type:\"Img\"` 열이면 `(Col)DefaultImage` 로 기본 이미지를 주고, 셀마다 다르면 데이터에 경로를 담는다. Index 로 참조하던 코드는 **경로 문자열로 바꿔야 한다.**",
+      "pattern": "\\.SetImageList\\s*\\("
+    },
+    {
+      "id": "SETEDITABLECOLORDIFF",
+      "desc": "GetEditableColorDiff()/SetEditableColorDiff(mode) → 초기화 `Cfg.ColorState` 로 옮긴다(v8 `props/cfg/color-state.md`). 편집 가능/불가에 따라 배경색을 구분하는 설정이다. ★메서드가 아니라 **초기화 값**이므로 실행 중 토글하던 코드는 다시 봐야 한다.",
+      "pattern": "\\.SetEditableColorDiff\\s*\\("
+    },
+    {
+      "id": "SETEXTENDLASTCOL",
+      "desc": "GetExtendLastCol()/SetExtendLastCol(v) → **마지막 열에 `(Col)RelWidth:1`** 을 준다(v8 `props/col/rel-width.md`). ★메서드가 아니라 **초기화 열 정의**로 옮기는 구조 변경이다. 남는 너비를 나눠 갖는 방식이라 여러 열에 주면 비율로 나뉜다.",
+      "pattern": "\\.SetExtendLastCol\\s*\\("
+    },
+    {
+      "id": "SETAUTOSUMPOSITION",
+      "desc": "GetAutoSumPosition()/SetAutoSumPosition(pos) → `setFormulaRowPosition(pos)`(v8 `funcs/core/set-formula-row-position.md`). v8 은 합계행을 **FormulaRow** 라 부른다. 값 의미가 같은지 확인하고 옮길 것.",
+      "pattern": "\\.SetAutoSumPosition\\s*\\("
+    },
+    {
+      "id": "SETCOMBOOPENMODE",
+      "desc": "GetComboOpenMode()/SetComboOpenMode(mode) → 초기화 `Cfg.EnumOpenMode`(v8 `props/cfg/enum-open-mode.md`). ★v7 `Combo`·`ComboEdit` 타입은 v8 에서 `Enum`·`EnumEdit` 이다(TYPE_COMBO_TO_ENUM 참고). **v8 기본 동작이 클릭 시 열림**이라 v7 과 기본값이 다를 수 있다 — 화면에서 확인할 것.",
+      "pattern": "\\.SetComboOpenMode\\s*\\("
+    },
+    {
+      "id": "SETDATALINKMOUSE",
+      "desc": "GetDataLinkMouse()/SetDataLinkMouse(col, link) → 열의 `(Col)Cursor` 속성(v8 `props/col/cursor.md`). 초기화면 `Cols` 에 `Cursor:\"pointer\"`, 생성 후면 `setAttribute(null, \"<열이름>\", \"Cursor\", \"pointer\")`. ★열 인자는 **plain Name** 만 쓴다.",
+      "pattern": "\\.SetDataLinkMouse\\s*\\("
+    },
+    {
+      "id": "GETTREECOL",
+      "desc": "GetTreeCol() → v8 은 `Cfg.MainCol` 속성을 읽는다(`sheet.MainCol`). ★**반환 타입이 다르다** — v7 은 트리 기준 컬럼의 **Index**(Number), v8 `MainCol` 은 **열 이름**(string)이다(근거: v8 `props/cfg/main-col.md` Type `string`). 인덱스로 비교·연산하던 코드는 이름 기준으로 다시 쓰거나 `getColIndex()` 로 변환한다. v8 에는 `GetConfig`/`SetConfig` 가 없어 **객체 속성으로 직접 접근**한다.",
+      "pattern": "\\.GetTreeCol\\s*\\("
+    },
+    {
+      "id": "GETTREEJSON",
+      "desc": "GetTreeJson(opt) → **v8 에 계층 구조 JSON 을 그대로 돌려주는 함수가 없다.** 두 가지로 대체한다 — ①`getSaveJson({useLevel:1})` 은 행마다 Level(Depth)을 담아 주지만 **평면 배열**이다(근거: v8 `funcs/core/get-save-json.md` `useLevel`, default 1). ②계층 그대로 필요하면 행 객체의 `childNodes`(또는 `getChildRows(row)`)를 재귀 순회해 직접 만든다. v7 `opt.ChildPropName`(자식 노드 속성명)에 해당하는 옵션은 없으므로 속성명을 코드에서 정한다.",
+      "pattern": "\\.GetTreeJson\\s*\\("
+    },
+    {
+      "id": "SETPAGINGPOSITION",
+      "desc": "SetPagingPosition(n) → 초기화 `Cfg.InfoRowConfig.Layout` 배열로 옮긴다. ★메서드가 아니라 **초기화 구조**다. v7 값 `0`=사용 안 함 → Layout 에서 `\"Paging\"` 을 뺀다 / `1`=좌측·`2`=우측 → v8 은 **배열 순서**로 정한다(default `[\"Paging\",\"Count\"]` = 페이징 좌·건수 우, 우측이면 `[\"Count\",\"Paging\"]`). 상단·하단 구분은 v7 이 SetCountPosition 을 따랐고 v8 은 `InfoRowConfig.Space` 다(CountPosition 항목 참고). ★`Paging` 은 `SearchMode:1,4,5` 에서만 동작한다. 숫자형 내비게이션이 필요하면 `\"Paging2\"`(Paging 과 동시 사용 금지). 근거: v8 `props/cfg/info-row-config.md` · v7 `funcs/core/SetPagingPosition.md`",
+      "pattern": "\\.SetPagingPosition\\s*\\("
+    },
+    {
+      "id": "SHOWTREESUBSUM",
+      "desc": "ShowTreeSubSum({SumCols,AvgCols,CountCols,MaxCols,MinCols}) → 초기화에서 **컬럼마다** `Formula` 에 대응 프리셋을 지정한다: SumCols→`IB_Preset.TreeSumFormula` · AvgCols→`TreeAvgFormula` · CountCols→`TreeCountFormula` · MaxCols→`TreeMaxFormula` · MinCols→`TreeMinFormula`. ★속성은 `Extend` 가 아니라 **`Formula`** 다. ★전제 2개: `Def.Row.CanFormula:1` 과 트리 동작용 `Cfg.MainCol`. `IB_Preset` 은 `plugins/ibsheet-common.js` 에 있으므로 그 스크립트를 함께 로드해야 한다. 삭제 상태 행을 빼고 집계하려면 프리셋 대신 커스텀 함수를 쓴다. 근거: v8 `props/col/formula.md` 「Tree Example」 · `migration/migration-04.md`",
+      "pattern": "\\.ShowTreeSubSum\\s*\\("
+    },
+    {
+      "id": "TYPE_RESULT",
+      "desc": "Type:\"Result\"(저장 처리 결과 표시) → **v8 에 대응 타입이 없다**(벤더 확인 2026-08-06: IBSheet8 에는 Status·DelCheck·Result 타입이 없다). `IB_Preset` 에도 Result 프리셋은 없다(STATUS·DelCheck 는 있다). 저장 결과를 보여주던 열이면 일반 `Text` 열로 두고 `doSave` 응답을 받아 직접 값을 넣는다. 고객 화면 542개 조사에서는 사용 0건이었다.",
+      "pattern": "(?<![\\w$])([\"']?)Type\\1\\s*:\\s*([\"'])Result\\2"
+    },
+    {
+      "id": "GETSAVEJSON_OPTIONS",
+      "desc": "getSaveJson 의 옵션은 **이름이 바뀌었다**(대소문자 문제가 아니다). `AllSave`→`saveMode`(전체/변경 구분 방식이 다르다) · `StdCol`→`col` · `ValidKeyField`→`validRequired` · `ValidEditLen`→`validSize` · `ValidMinLen`·`ValidFullInput`·`StdColValue`·`AllTypeToText` 는 v8 대응이 없다. v8 에는 `saveAttr`·`rows`·`useLevel`·`validEditMask` 등이 새로 있다. 근거: v7 `funcs/save/GetSaveJson.md` · v8 `funcs/core/get-save-json.md`",
+      "pattern": "\\.\\s*getSaveJson\\s*\\(\\s*[{\\[]"
+    },
+    {
+      "id": "GETSAVESTRING_OPTIONS",
+      "desc": "getSaveString 의 옵션은 이름이 바뀌었다. `AllSave`→`saveMode` · `Mode`→`queryMode` · `ValidKeyField`→`validRequired` · `ValidEditLen`→`validSize`. `ValidMinLen`·`ValidFullInput`·`StdColValue`·`NoSelectCellEvent` 는 대응이 없다",
+      "pattern": "\\.\\s*getSaveString\\s*\\(\\s*[{\\[]"
+    },
+    {
+      "id": "DOSAVE_OPTIONS",
+      "desc": "doSave 의 옵션은 이름이 바뀌었다. `Mode`→`queryMode` · `CallBack`→`questCallback`(용도 확인) · `ValidKeyField`→`validRequired` · `ValidEditLen`→`validSize`. `ValidMinLen`·`ValidFullInput` 은 대응이 없다. 전체/변경 저장 구분은 `saveMode` 다",
+      "pattern": "\\.\\s*doSave\\s*\\(\\s*[{\\[]"
+    },
+    {
+      "id": "DOSEARCH_OPTIONS",
+      "desc": "doSearch 는 **인자 구조가 바뀌었다.** v7 `DoSearch(PageUrl, Param, Opt)` → v8 은 옵션 객체 하나에 `url`·`param`·`method`·`sync` 를 담는다. `AppendRow`→`next`(행 위치 지정 방식이 다르다) · `Fx` 는 대응이 없다",
+      "pattern": "\\.\\s*doSearch\\s*\\(\\s*[{\\[]"
+    },
+    {
+      "id": "LOADSEARCHDATA_OPTIONS",
+      "desc": "loadSearchData 의 옵션은 이름이 바뀌었다. `Content`→`data` · `AppendRow`→`next` · `Event`→`ignoreEvent`(**의미가 반대다**) · `Fx`·`Wait` 는 대응이 없다. 근거: v8 `funcs/core/load-search-data.md`",
+      "pattern": "\\.\\s*loadSearchData\\s*\\(\\s*[{\\[]"
+    },
+    {
+      "id": "MAKEPIVOTTABLE_OPTIONS",
+      "desc": "makePivotTable 의 옵션은 완전히 다르다. v7 `Cols`·`Rows`·`Value` → v8 `criterias`(`row`·`col`·`data`) 구조로 재작성해야 한다. `CalcSumRatio`·`PivotFilter` 는 대응이 없다",
+      "pattern": "\\.\\s*makePivotTable\\s*\\(\\s*[{\\[]"
+    },
+    {
+      "id": "MAKESUBTOTAL_OPTIONS",
+      "desc": "makeSubTotal 은 대소문자 외에 `CaptionText`·`CntCol`·`OtherColText` 가 v8 에 없다. 소계 캡션·건수 표시는 v8 구조로 다시 지정해야 한다",
+      "pattern": "\\.\\s*makeSubTotal\\s*\\(\\s*[{\\[]"
+    },
+    {
+      "id": "APPLYSAVERESULT_OPTIONS",
+      "desc": "applySaveResult 의 옵션은 이름이 바뀌었다. `Content`→`data` · `Event`→`ignoreEvent`(**의미가 반대다**) · `CallBack` 은 대응 확인 필요",
+      "pattern": "\\.\\s*applySaveResult\\s*\\(\\s*[{\\[]"
+    },
+    {
+      "id": "MOVEROW_OPTIONS",
+      "desc": "moveRow 는 v7 이 행 **인덱스**(`ToRow`·`FromRow`)를 받았고 v8 은 **행 객체**를 받는다. `RowLevel` 은 대응이 없다 — 트리 이동이면 v8 트리 API 로 다시 쓴다",
+      "pattern": "\\.\\s*moveRow\\s*\\(\\s*[{\\[]"
+    },
+    {
+      "id": "CFG_DRAGMODE",
+      "desc": "Cfg DragMode → CanDrag. ★맨 치환 금지(v1.1.1까지 오변환) — v7 number(-1/0/1) vs v8 boolean. DragMode:0(기본)은 v7에서 Ctrl로만 드래그였으나 v8 CanDrag:true는 상시 드래그 → 동작 변화. DragMode:-1→CanDrag:false. property-mapping.md 'Drag/Select 계열' 참조.",
+      "pattern": "(?<![\\w$])([\"']?)DragMode\\1(\\s*:)"
+    },
+    {
+      "id": "CFG_DRAGCELL",
+      "desc": "Cfg DragCell → v8도 DragCell(이름·값 동일) ★치환하지 말 것. 단 v8은 CanDrag:true 일 때만 적용되므로 CanDrag 동반 설정이 필요한지 확인. property-mapping.md 'Drag/Select 계열' 참조.",
+      "pattern": "(?<![\\w$])([\"']?)DragCell\\1(\\s*:)"
+    },
+    {
+      "id": "CFG_DRAGROWSELECTION",
+      "desc": "Cfg DragRowSelection → DragCell ★값 반전 필요(DragCell 의 반대값으로 매핑). v7 0=셀/1=행 이지만 v8 DragCell 은 0=행/1=셀. 이름만 바꾸면 동작이 뒤집힌다. v7 은 DragCell 과 DragRowSelection 이 같은 축을 반대 방향으로 중복 제공했고 v8 은 DragCell 하나로 통합됐으므로, 두 속성이 동시에 설정돼 있으면 값이 모순되지 않는지 확인 후 하나로 합칠 것. property-mapping.md 'Drag/Select 계열' 참조.",
+      "pattern": "(?<![\\w$])([\"']?)DragRowSelection\\1(\\s*:)"
+    },
+    {
+      "id": "CFG_HEADERSORT",
+      "desc": "Cfg HeaderSort → 값별 분기(SortIcons 아님). 0→CanSort:0, 1→기본값이라 생략 가능, 2→HeaderSortMode:2, 3→헤더 셀별 CanSort 개별 지정(단일 대응 없음). property-mapping.md 'Sort 계열' 참조.",
+      "pattern": "(?<![\\w$])([\"']?)HeaderSort\\1(\\s*:)"
+    },
+    {
+      "_comment": "── 머지(Merge) 계열: v7이 한 속성에 섞어둔 것을 v8이 DataMerge/HeaderMerge/PrevColumnMerge/IgnoreHeaderColMerge 로 분리. 맨 치환하면 병합이 사라지거나 뒤집힌다. property-mapping.md 'Merge 계열' 참조. ──",
+      "id": "CFG_MERGESHEET",
+      "desc": "Cfg MergeSheet → HeaderMerge + DataMerge + PrevColumnMerge 세 속성으로 분리한다. ★맨 치환 금지 - 한 속성이 세 개로 갈라진다. ★★벤더 확정 매핑표(2026-08-04 최종): 0(msNone)->H0/D0/P0 · 1(msAll)->H5/D5/P3 · 2(msPrevColumnMerge)->H0/D1/P3 · 3(msFixedMerge)->H0/D1/P3 · 4(msBaseColumnMerge)->H0/D1/P3 · 5(msHeaderOnly)->H1/D0/P2 · 7(5+2)->H1/D1/P3 · 8(5+3)->H1/D1/P3 · 9(5+4)->H1/D1/P3 (H=HeaderMerge, D=DataMerge, P=PrevColumnMerge). msHeaderOnly 가 섞였는지가 HeaderMerge 를 가른다. 상수 이름(msAll 등)은 V7CONST_* 규칙이 속성 자리에서 먼저 숫자로 바꿔주고, 조합값(msHeaderOnly + msPrevColumnMerge)은 한쪽만 바뀐 뒤 V7CONST_RESIDUE 로 넘어온다.",
+      "pattern": "(?<![\\w$])([\"']?)MergeSheet\\1(\\s*:)"
+    },
+    {
+      "id": "CFG_HEADERMERGEMODE",
+      "desc": "Cfg HeaderMergeMode → HeaderMerge(>0) + IgnoreHeaderColMerge(반대값). ★두 속성을 함께 설정해야 한다. v7 HeaderMergeMode 는 헤더의 가로(ColMerge 방향) 머지 동작 방식을 정하는 속성이고(v7 매뉴얼 설명이 일부 누락돼 있다), v8 은 그 축을 IgnoreHeaderColMerge 로 옮겼는데 그 속성은 HeaderMerge > 0 일 때만 적용된다. 따라서 HeaderMerge 를 1~6 중 하나로 켜 둔 상태에서 IgnoreHeaderColMerge 에 HeaderMergeMode 의 반대값을 넣는다(0→1, 1→0). ★HeaderMergeMode:0 을 HeaderMerge:0 으로 옮기면 안 된다 — HeaderMerge:0 은 '헤더 병합 안함'이라 헤더 병합이 사라지고 IgnoreHeaderColMerge 도 무시된다. v7 코드에 이 속성이 있었다는 것은 헤더 병합을 쓰고 있었다는 뜻이다. 같은 화면에 MergeSheet 도 있으면 HeaderMerge 값을 하나로 합칠 것(두 v7 속성이 같은 v8 속성을 건드린다). property-mapping.md 'Merge 계열' 참조.",
+      "pattern": "(?<![\\w$])([\"']?)HeaderMergeMode\\1(\\s*:)"
+    },
+    {
+      "id": "CFG_PREVCOLUMNMERGEMODE",
+      "desc": "Cfg PrevColumnMergeMode → v8도 PrevColumnMergeMode(동명·동의미) ★치환하지 말 것. PrevColumnMerge는 별개 속성(앞컬럼 머지 사용 영역 0~3)이라 바꾸면 기능이 꺼진다. 단 default가 v7=1(페이지 단위) vs v8=0(전체)로 반대이므로, v7 코드에서 이 속성을 생략했다면 v8에서 PrevColumnMergeMode:1을 명시해야 동작이 유지된다.",
+      "pattern": "(?<![\\w$])([\"']?)PrevColumnMergeMode\\1(\\s*:)"
+    },
+    {
+      "id": "COL_COLMERGE",
+      "desc": "Col ColMerge → v8도 ColMerge(col, boolean: 0=병합 제외, 1=병합 대상 default) ★치환하지 말 것. Span은 cell 속성(colspan)으로 전혀 다르다. v7 값 정의가 매뉴얼 PropertyList에 없어 number 사용 여부는 원본 확인 필요.",
+      "pattern": "(?<![\\w$])([\"']?)ColMerge\\1(\\s*:)"
+    },
+    {
+      "id": "CFG_NOIMAGEURL",
+      "desc": "Cfg NoImageUrl → Col DefaultImage ★레벨 이동. v7은 Cfg(시트 전체 대체 이미지), v8 DefaultImage는 Col 속성이며 Type:\"Img\" 컬럼에만 적용된다. Cfg에 DefaultImage를 두면 v8이 무시한다 → Img 컬럼마다 개별 설정으로 옮길 것.",
+      "pattern": "(?<![\\w$])([\"']?)NoImageUrl\\1(\\s*:)"
+    },
+    {
+      "id": "COL_COMBOTEXT_CODE",
+      "desc": "Col ComboText/ComboCode → Enum/EnumKeys (양쪽 값 앞에 구분자 | 추가). Type:\"Combo\"→\"Enum\" 은 자동 변환되지만 이 두 키는 남으므로 함께 옮겨야 컬럼이 동작한다. 값이 변수/함수 결과면 런타임 조립 위치까지 확인. property-mapping.md Combo 절 참조.",
+      "pattern": "(?<![\\w$])([\"']?)Combo(Text|Code)\\1(\\s*:)"
+    },
+    {
+      "id": "CFG_SEARCHMODE_0",
+      "desc": "SearchMode:0 = FastLoad 가상 스크롤. SEARCHMODE_2_TO_0 으로 자동 상향된 결과이며 의도된 것이지만, 제약을 충족하는지 확인해야 한다(appx/fastload-constraints). ①사용불가: 피벗 시트, Cfg.NoVScroll ②권장하지 않는 Type: Lines/Html/Img/Icon/Button ③행 높이가 균일하지 않으면(Wrap:1 등) Cfg.AutoRowHeight 필요. 위에 해당하면 SearchMode:2(LazyLoad) 유지를 검토. ★값 자리에 따옴표가 붙은 표기(SearchMode:\"2\" · Hidden:\"false\")도 잡는다 - 실제 고객 코드에서 발견돼 2026-08-04 보강했다.",
+      "pattern": "(?<![\\w$])([\"']?)SearchMode\\1\\s*:\\s*([\"']?)0\\2(?![0-9])"
+    },
+    {
+      "id": "CFG_ONEPAGESORT",
+      "desc": "Cfg OnePageSort -> SortCurrentPage. 의미 동일(서버 페이징 시 현재 페이지 내에서만 정렬) - v7 smServerPaging2(SearchMode:4) / v8 SearchMode:4,5. v7 쪽은 ibsheet.cfg 에 두는 설정이라 화면 코드에서는 잘 나타나지 않는다. 2026-08-05 v7 매뉴얼에 페이지가 추가됐다(props/PropertyList/OnePageSort.md) - 'smServerPaging2(SearchMode:4) 에서만 동작' 이 문서로 확인된다. 관련 속성 OnePageFilter 도 함께 볼 것.",
+      "pattern": "(?<![\\w$])([\"']?)OnePageSort\\1(\\s*:)"
+    },
+    {
+      "_comment": "── v8에 동명 속성이 존재하므로 치환하면 안 되는 항목. 이름을 바꾸면 전혀 다른 속성이 되어 설정이 변질된다. ──",
+      "id": "CFG_TOUCHSCROLLING",
+      "desc": "Cfg TouchScrolling → v8도 TouchScrolling ★치환하지 말 것. TouchScroll 은 스크롤바 모양(0~4)으로 무관하다. 단 ①v7 number(0=사용안함 default, 1=일반, 2=지연이동) → v8 boolean(0/1)이라 v7 2(지연이동)는 v8 대응 없음 ②★default 반대(v7 0, v8 1) → v7에서 생략했다면 v8에 0 을 명시해야 동작이 유지된다.",
+      "pattern": "(?<![\\w$])([\"']?)TouchScrolling\\1(\\s*:)"
+    },
+    {
+      "id": "CFG_AUTOROWHEIGHT",
+      "desc": "Cfg AutoRowHeight → v8도 AutoRowHeight(동명) ★치환하지 말 것(Wrap 은 v8에서 적용 '조건'일 뿐 대체물이 아니다). ★default 반대 — v7 기본 1(사용), v8 기본 0(사용 안함) → v7에서 생략했다면 v8에 AutoRowHeight:true 를 명시해야 가변 행 높이가 유지된다. v8 제약: SearchMode 0·3 에서만 지원, Lines/Html/Img/Button 타입이나 Wrap/HtmlPrefix/HtmlPostfix/TextSize 속성 컬럼이 하나 이상 있어야 적용, 시트 생성 시에만 반영.",
+      "pattern": "(?<![\\w$])([\"']?)AutoRowHeight\\1(\\s*:)"
+    },
+    {
+      "id": "HIDDEN_TRUE",
+      "desc": "Hidden:true → Visible:0 (★값 반전 — Hidden:false도 있으니 컨텍스트 확인). 자동 치환 위험 → 검토. ★값 자리에 따옴표가 붙은 표기(SearchMode:\"2\" · Hidden:\"false\")도 잡는다 - 실제 고객 코드에서 발견돼 2026-08-04 보강했다.",
+      "pattern": "(?<![\\w$])([\"']?)Hidden\\1\\s*:\\s*([\"']?)(true|false|1|0)\\2"
+    },
+    {
+      "id": "TYPE_STATUS",
+      "desc": "Type:\"Status\" → Extend:IB_Preset.STATUS (Type은 \"Text\"). IBSheet8에 Status 타입 없음. ★IB_Preset 은 본체가 아니라 plugins/ibsheet-common.js 에 정의된 전역이다 — 그 스크립트를 함께 로드해야 하고, 빠뜨리면 검증 3종 PASS 인데 런타임에 'IB_Preset is not defined' 로 죽는다.",
+      "pattern": "(?<![\\w$])([\"']?)Type\\1\\s*:\\s*([\"'])Status\\2"
+    },
+    {
+      "id": "TYPE_DELCHECK",
+      "desc": "Type:\"DelCheck\" → Extend:IB_Preset.DelCheck (Type은 \"Bool\"). IBSheet8에 DelCheck 타입 없음. ★IB_Preset 은 본체가 아니라 plugins/ibsheet-common.js 에 정의된 전역이다 — 그 스크립트를 함께 로드해야 하고, 빠뜨리면 검증 3종 PASS 인데 런타임에 'IB_Preset is not defined' 로 죽는다.",
+      "pattern": "(?<![\\w$])([\"']?)Type\\1\\s*:\\s*([\"'])DelCheck\\2"
+    },
+    {
+      "id": "GETSEARCHDATA",
+      "desc": "GetSearchData(url,param) → IBSheet8 미지원. 동기/비동기 ajax로 재구성 필요. ★자동 변환 불가.",
+      "pattern": "\\.GetSearchData\\s*\\("
+    },
+    {
+      "id": "GETSAVEDATA",
+      "desc": "GetSaveData() → IBSheet8 미지원. ajax로 재구성 필요.",
+      "pattern": "\\.GetSaveData\\s*\\("
+    },
+    {
+      "id": "COLVALUEDUP",
+      "desc": "ColValueDup(col) → getRowsByDup(col). 반환값 index→row object 배열로 변경. 비교 로직(>0, ==-1 등) 재작성 필요.",
+      "pattern": "\\.ColValueDup(Rows)?\\s*\\("
+    },
+    {
+      "id": "SELECTCELL",
+      "desc": "SelectCell(r,c)/SetSelectRow(r) → focus(rowObj, colName). 숫자 인덱스 인자는 표준 헬퍼로 변환: focus(getRowByIndex7(r), getColByIndex7(c)). (공식 getRowByIndex는 데이터행만 카운트하고 보정 인자가 없어 헤더/필터/합계 오프셋을 직접 계산해야 하므로 브릿지 사용)",
+      "pattern": "\\.(SelectCell|SetSelectRow)\\s*\\("
+    },
+    {
+      "id": "GETSELECTROW",
+      "desc": "GetSelectRow() → getFocusedRow(). 반환이 index→row object.",
+      "pattern": "\\.GetSelectRow\\s*\\("
+    },
+    {
+      "id": "GETSELECTCOL",
+      "desc": "GetSelectCol() → getFocusedCol() (열이름 반환). 숫자 인덱스 비교 로직 재작성.",
+      "pattern": "\\.GetSelectCol\\s*\\("
+    },
+    {
+      "id": "SETCELLEDITABLE",
+      "desc": "SetCellEditable(r,c,b) → setAttribute2(r,c,\"CanEdit\",b) (표준 헬퍼 — IBSheet8은 CanEdit이 ChangeEdit/AddEdit로 분리, Button은 Disabled). SetColEditable/SetRowEditable도 setAttribute2(null,col,...)/setAttribute2(row,null,...). SetEditable(b) → sheet.CanEdit=b; rerender().",
+      "pattern": "\\.(SetCellEditable|SetEditable|SetColEditable|SetRowEditable)\\s*\\("
+    },
+    {
+      "id": "GETCELLVALUE",
+      "desc": "GetCellValue/SetCellValue → getValue2/setValue2 (표준 헬퍼 — FormatFix 반영, onAfterChange 발생, Status·Enum 처리). col 인자=plain Name만(시트id. 접두사 금지). ★setValue2의 4번째 인자는 evt(이벤트 발생 여부)로 공식 setValue의 렌더 억제 인자와 의미가 다름. 합계행/헤더/이미지 셀·Orig 원본값 문맥은 공식 getValue/setValue 유지. 표시문자열은 getString/setString.",
+      "pattern": "\\.(GetCellValue|SetCellValue)\\s*\\("
+    },
+    {
+      "id": "GETCELLTEXT",
+      "desc": "GetCellText/SetCellText → getString/setString.",
+      "pattern": "\\.(GetCellText|SetCellText)\\s*\\("
+    },
+    {
+      "id": "BACKCOLOR",
+      "desc": "Get/SetCellBackColor/RowBackColor/ColBackColor → get/setAttribute(...,\"Color\",...). 행/열은 row=객체|null, col=이름.",
+      "pattern": "\\.(Set|Get)(Cell|Row|Col)BackColor\\s*\\("
+    },
+    {
+      "id": "FONTCOLOR",
+      "desc": "Get/SetCellFontColor/RowFontColor/ColFontColor → ...\"TextColor\".../RangeFontColor → setRangeAttribute.",
+      "pattern": "\\.(Set|Get)(Cell|Row|Col|Range)FontColor\\s*\\("
+    },
+    {
+      "id": "CELLCOMBOITEM",
+      "desc": "CellComboItem(r,col,{ComboCode,ComboText}) → setAttribute Enum/EnumKeys + refreshCell.",
+      "pattern": "\\.CellComboItem\\s*\\("
+    },
+    {
+      "id": "ROWDELETE",
+      "desc": "RowDelete(row) → removeRow2(row) (표준 헬퍼 — 삭제 전 onRowDelete 발생). IBSheet7은 행 삭제 시 이벤트가 발생했으므로 기본은 removeRow2. 이벤트 핸들러가 없거나 불필요하면 공식 removeRow(row). ★자동 치환하지 않는 이유: 둘 중 어느 쪽인지는 onRowDelete 핸들러 존재 여부를 봐야 판단 가능.",
+      "pattern": "\\.RowDelete\\s*\\("
+    },
+    {
+      "id": "COMPUTESUM",
+      "desc": "ComputeSum(col,start,end) → computeSum(col,start,end,isFullSum) (표준 헬퍼. 공식 IBSheet8 API에는 없음). 범위 인자는 IBSheet7 인덱스·행객체 모두 허용, 생략 시 첫/마지막 데이터행. Int/Float 컬럼만 동작하며 isFullSum 미지정 시 SubSum 행 제외 → IBSheet7 동작과 합계 범위가 일치하는지 확인.",
+      "pattern": "\\.ComputeSum\\s*\\("
+    },
+    {
+      "id": "SHEETSIZE",
+      "desc": "SetSheetWidth(w)/GetSheetHeight()/SetSheetHeight(h) → 동명의 표준 헬퍼(setSheetWidth/getSheetHeight/setSheetHeight). 숫자 인자에 px 자동 부여, setSheetHeight는 rerender()까지 수행. GetSheetWidth는 브릿지 없음 → sheet.MainTag.getBoundingClientRect().width 등으로 직접 처리.",
+      "pattern": "\\.(Get|Set)Sheet(Width|Height)\\s*\\("
+    },
+    {
+      "id": "DATAINSERT",
+      "desc": "DataInsert(idx) → addRow2(idx) (표준 헬퍼 — IBSheet7 인덱스를 next/parent로 변환, 트리는 addRow2(idx,lvl)). DataCopy() → copyRow({row:getFocusedRow()}). ★공식 addRow에 index 인자 사용 불가 → 직접 쓸 때는 addRow({next:getFirstRow()}) 형태.",
+      "pattern": "\\.(DataInsert|DataCopy)\\s*\\("
+    },
+    {
+      "id": "LASTCOL_LASTROW",
+      "desc": "LastCol()→getLastCol()(열이름)/LastRow()→getLastRow()(행객체). 숫자 인덱스 for루프 재작성(getCols().length-1).",
+      "pattern": "\\.(LastCol|LastRow)\\s*\\("
+    },
+    {
+      "id": "HEADERROWS",
+      "desc": "HeaderRows() → getHeaderRows().length. 숫자→배열.length.",
+      "pattern": "\\.HeaderRows\\s*\\("
+    },
+    {
+      "id": "ROWCOUNT",
+      "desc": "RowCount(s) → getTotalRowCount() 또는 getRowsByStatus(\"Added,Changed,Deleted\").length (상태별).",
+      "pattern": "\\.RowCount\\s*\\("
+    },
+    {
+      "id": "SETACTIONMENU",
+      "desc": "SetActionMenu(menuText) → setActionMenu(menuText) (표준 헬퍼 — \"|\" 구분 문자열을 Def.Row.Menu.Items 배열로 변환). 헬퍼가 매핑하지 않는 커스텀 액션명은 Value가 항목명 그대로 들어가므로 onSelectMenu/onShowMenu 분기를 맞출 것. Group/Header ActionMenu는 브릿지 없음 → setAttribute(row,null,\"Menu\",...) 또는 Def.Header.Menu로 재구성.",
+      "pattern": "\\.(Set|Get)(Group|Header)?ActionMenu\\s*\\("
+    },
+    {
+      "id": "SETFOCUSEDITMODE",
+      "desc": "SetFocusEditMode(m) → sheet.InEditMode = m; (cfg 속성 직접 접근).",
+      "pattern": "\\.SetFocusEditMode\\s*\\("
+    },
+    {
+      "id": "GETETCDATA",
+      "desc": "GetEtcData(\"키\") → sheet.etc.키 (★함수가 아니라 속성. sheet.etc(\"키\") 형태 호출 아님). 호출 형태를 유지해야 하면 읽기 전용 표준 헬퍼 getEtcData(\"키\")(= sheet.etc?.[\"키\"]) 사용 가능. SetEtcData는 쓰기 브릿지가 없으므로 sheet.etc.키 = 값 직접 대입. 프로젝트 공통 래퍼로 우회 금지.",
+      "pattern": "\\.GetEtcData\\s*\\("
+    },
+    {
+      "id": "MOUSEROW",
+      "desc": "MouseRow() → getMouseRow() (행 객체 반환). 인덱스로 쓰던 코드 재작성.",
+      "pattern": "\\.MouseRow\\s*\\("
+    },
+    {
+      "id": "SETCONFIG",
+      "desc": "SetConfig()/GetConfig() → 객체 속성 직접 접근(sheet.CanEdit 등). IBSheet8엔 setConfig 없음.",
+      "pattern": "\\.(Set|Get)Config\\s*\\("
+    },
+    {
+      "id": "COLSAVENAME",
+      "desc": "ColSaveName(j) → 이벤트 안에서는 evtParam.col. 그 외 숫자 j는 표준 헬퍼 getColByIndex7(j)로 열이름 변환(includeHideCol+SEQ 보정 내장). 공식 getColByIndex(j)는 보이는 컬럼 기준이라 보정을 직접 해야 함.",
+      "pattern": "\\.ColSaveName\\s*\\("
+    },
+    {
+      "_comment": "── 아래는 시맨틱 변경 API (반환/인자 의미 변경 → 사용처 재작성 필요) ──",
+      "id": "GETPARENTROW",
+      "desc": "GetParentRow(row) → getParentRows(row). 반환이 index→row객체 '배열' → 보통 getParentRows(row)[0] 필요.",
+      "pattern": "\\.GetParentRow\\s*\\("
+    },
+    {
+      "id": "GETMERGEDCELL",
+      "desc": "GetMergedStartCell/GetMergedEndCell → getMergeRange(). 반환 \"행,열\" 문자열 → [startRow,startCol,endRow,endCol] 배열. 사용처 재작성.",
+      "pattern": "\\.GetMerged(Start|End)Cell\\s*\\("
+    },
+    {
+      "id": "FINDSTATUSROW",
+      "desc": "FindStatusRow(s) → getRowsByStatus(s). ★상태값 변경 D→\"Deleted\",U→\"Changed\",I→\"Added\",R→\"\". 인자 문자열도 함께 치환.",
+      "pattern": "\\.FindStatusRow\\s*\\("
+    },
+    {
+      "id": "FINDCHECKEDROW",
+      "desc": "FindCheckedRow(col) → getRowsByChecked(col). ★반환 \"1|2|5\" 문자열 → row객체 배열. split('|')/인덱스 접근 재작성.",
+      "pattern": "\\.FindCheckedRow\\s*\\("
+    },
+    {
+      "id": "CHECKALL",
+      "desc": "CheckAll(col,b) → setAllCheck(col,...) (인자 변경. 숫자 col은 getColByIndex7(col)로 변환) / CheckedRows() → getRowsByChecked().length (숫자) / CheckReverse() → 직접 루프 + renderBody(). ★CheckReverse 루프에서 setValue(r,c,v,0)의 4번째 인자는 렌더 억제이므로 setValue2(4번째=evt)로 바꾸지 말 것. 사용처 확인.",
+      "pattern": "\\.(CheckAll|CheckedRows|CheckReverse)\\s*\\("
+    },
+    {
+      "id": "GETROWSTATUS",
+      "desc": "GetRowStatus(rowIndex) → getRowStatus(row) ★맨 치환 금지 - 인자와 반환값이 모두 바뀐다. ①인자: v7 은 행 index, v8 은 행 객체 → 브릿지 getRowByIndex7(idx) 로 변환해 넘긴다. ②반환값: v7 은 'R'(조회)/'U'(수정)/'I'(입력)/'D'(삭제), v8 은 \"\"(상태없음)/'Changed'/'Added'/'Deleted' → 비교 리터럴을 전부 재작성해야 한다(예: == \"I\" → == \"Added\", == \"R\" → == \"\"). ③v8 은 상태 우선순위가 있다 — Added 포함 시 무조건 Added, 그다음 Deleted, 그 외 Changed, 없으면 \"\". v7 처럼 복합 상태를 세밀히 구분하던 로직은 getRowsByStatus 등으로 재구성이 필요할 수 있다. conventions.md 행 상태값 절 참조. ★인자·반환값·우선순위(Added > Deleted > Changed) 모두 벤더 확인으로 확정됐다(2026-08-04). ★v7 `GetRowStatus` 는 **내장돼 있으나 공개 함수가 아니다**(벤더 확인 2026-08-06) — v7 매뉴얼에 페이지가 없는 이유다. 실무에서는 상태 컬럼(`Type:\"Status\"`)을 두고 그 값을 읽는 쪽이 더 흔하다(고객 화면 542개 조사: `GetRowStatus` 0회 / `Type:\"Status\"` 209회·18개사). 그 경우 TYPE_STATUS 규칙을 함께 본다.",
+      "pattern": "\\.GetRowStatus\\s*\\("
+    },
+    {
+      "id": "SETROWSTATUS",
+      "desc": "SetRowStatus(row,상태) → 공식 IBSheet8 대응 메서드는 없음(자동치환 금지). 상태값 R/I/U/D = \"\"/Added/Changed/Deleted. 초기화(R)는 표준 헬퍼 clearRowStatus(row), I/U는 setAttribute(row,null,\"Added\"|\"Changed\",1), D는 removeRow2(row)/deleteRow(row). orgType==\"Status\" 컬럼에 값을 넣던 코드라면 setValue2(row,col,\"I\"|\"U\"|\"D\")로 옮기면 상태 재설정까지 자동 처리됨.",
+      "pattern": "\\.SetRowStatus\\s*\\("
+    },
+    {
+      "id": "ENABLE",
+      "desc": "GetEnable()/SetEnable(b) → enable()/disable(). ★SetEnable(0)→disable(), SetEnable(1)→enable() (인자→메서드 분기).",
+      "pattern": "\\.(Get|Set)Enable\\s*\\("
+    },
+    {
+      "id": "GETGROUPCOL",
+      "desc": "GetGroupCol() → sheet.Group 속성 (열 구분자 \",\"로 변경). 파싱 로직 재작성.",
+      "pattern": "\\.GetGroupCol\\s*\\("
+    },
+    {
+      "id": "GETCOLSORTINFO",
+      "desc": "GetColSortInfo() → sheet.Sort 속성 문자열 파싱 (예 \"CCC,AAA,-BBB\", - 가 DESC).",
+      "pattern": "\\.GetColSortInfo\\s*\\("
+    },
+    {
+      "id": "VISIBLE",
+      "desc": "GetVisible()/SetVisible() → 전용 API 없음. sheet.MainTag.style.display 직접 조작.",
+      "pattern": "\\.(Get|Set)Visible\\s*\\("
+    },
+    {
+      "id": "DOALLSAVE",
+      "desc": "DoAllSave() → doSave({Url:.., saveMode:0}). 인자 구조 변경.",
+      "pattern": "\\.DoAllSave\\s*\\("
+    },
+    {
+      "id": "FITCOL",
+      "desc": "FitColWidth(\"10|50|30\") → fitColWidth([10,50,30]) (인자 문자열→배열). FitSize() → 너비만 지원(높이 불가), getCols().forEach(c=>fitSize(c)).",
+      "pattern": "\\.(FitColWidth|FitSize|FitSizeCol)\\s*\\("
+    },
+    {
+      "id": "CHILDROW_PROP",
+      "desc": "GetFirstChildRow(row)/GetLastChildRow(row) → row.firstChild / row.lastChild (메서드→속성 접근).",
+      "pattern": "\\.(GetFirstChildRow|GetLastChildRow)\\s*\\("
+    },
+    {
+      "_comment": "── 아래는 반환/인자 의미가 바뀌어 자동 치환이 부적합한 API (호출명만 바꾸면 버그) ──",
+      "id": "FINDTEXT",
+      "desc": "FindText(col,val,start) → findText(...). 호출명 변환은 가능하나 ★반환 행번호(숫자)→행 object 로 변경 → 반환 사용처 재작성 필요.",
+      "pattern": "\\.FindText\\s*\\("
+    },
+    {
+      "id": "COLUMNSORT",
+      "desc": "ColumnSort() → doSort()/clearSort(). 인자 형식 변경(\"-col\"=DESC), 초기화는 clearSort() 분리.",
+      "pattern": "\\.ColumnSort\\s*\\("
+    },
+    {
+      "id": "REMOVEFOOTERROW",
+      "desc": "RemoveFooterRow() → getFooterRows().forEach(r=>r.id!=\"FormulaRow\"&&removeRow(r)). 단순 removeRow 치환 불가(FormulaRow 제외+루프).",
+      "pattern": "\\.RemoveFooterRow\\s*\\("
+    },
+    {
+      "_comment": "── Cfg → 하위 객체/다른 레벨로 이동하는 속성. 키 이름만 바꾸면 v8이 조용히 무시한다. 속성별 개별 규칙. ──",
+      "id": "CFG_EXPORT_DOWN2EXCELURL",
+      "desc": "Cfg Down2Excel_Url → Cfg.Export.Down2ExcelUrl. ★구조 이동. 평평한 Cfg 키를 Cfg.Export 객체 안으로 옮겨야 한다. 키 이름만 바꾸면 v8이 무시한다. property-mapping.md 'Export 설정 변환 예제' 참조.",
+      "pattern": "(?<![\\w$])([\"']?)Down2Excel_Url\\1(\\s*:)"
+    },
+    {
+      "id": "CFG_EXPORT_DOWN2PDFURL",
+      "desc": "Cfg Down2Pdf_Url → Cfg.Export.Down2PdfUrl. ★구조 이동. 평평한 Cfg 키를 Cfg.Export 객체 안으로 옮겨야 한다. 키 이름만 바꾸면 v8이 무시한다. property-mapping.md 'Export 설정 변환 예제' 참조.",
+      "pattern": "(?<![\\w$])([\"']?)Down2Pdf_Url\\1(\\s*:)"
+    },
+    {
+      "id": "CFG_EXPORT_LOADEXCELURL",
+      "desc": "Cfg LoadExcel_Url → Cfg.Export.LoadExcelUrl. ★구조 이동. 평평한 Cfg 키를 Cfg.Export 객체 안으로 옮겨야 한다. 키 이름만 바꾸면 v8이 무시한다. property-mapping.md 'Export 설정 변환 예제' 참조.",
+      "pattern": "(?<![\\w$])([\"']?)LoadExcel_Url\\1(\\s*:)"
+    },
+    {
+      "id": "CFG_EXPORT_DIRECTLOADURL",
+      "desc": "Cfg DirectLoadExcel_Url → Cfg.Export.DirectLoadExcelUrl. ★구조 이동. 평평한 Cfg 키를 Cfg.Export 객체 안으로 옮겨야 한다. 키 이름만 바꾸면 v8이 무시한다. property-mapping.md 'Export 설정 변환 예제' 참조.",
+      "pattern": "(?<![\\w$])([\"']?)DirectLoadExcel_Url\\1(\\s*:)"
+    },
+    {
+      "id": "CFG_INFOROW_COUNTFORMAT",
+      "desc": "Cfg CountFormat → Cfg.InfoRowConfig (Layout:\"Count\" / Format). ★구조 이동. 평평한 Cfg 키를 Cfg.InfoRowConfig 객체 안으로 옮겨야 한다(Layout/Space/Format/ViewCount 조합). 키 이름만 바꾸면 v8이 무시한다. property-mapping.md 'InfoRowConfig 변환 예제' 참조.",
+      "pattern": "(?<![\\w$])([\"']?)CountFormat\\1(\\s*:)"
+    },
+    {
+      "id": "CFG_INFOROW_COUNTPOSITION",
+      "desc": "Cfg CountPosition → Cfg.InfoRowConfig (Layout 순서 + Space). ★구조 이동. 평평한 Cfg 키를 Cfg.InfoRowConfig 객체 안으로 옮겨야 한다(Layout/Space/Format/ViewCount 조합). 키 이름만 바꾸면 v8이 무시한다. property-mapping.md 'InfoRowConfig 변환 예제' 참조.",
+      "pattern": "(?<![\\w$])([\"']?)CountPosition\\1(\\s*:)"
+    },
+    {
+      "id": "CFG_INFOROW_PAGINGPOSITION",
+      "desc": "Cfg PagingPosition → Cfg.InfoRowConfig.Layout([\"Paging\",\"\"] 또는 [\"\",\"Paging\"]). ★구조 이동. 평평한 Cfg 키를 Cfg.InfoRowConfig 객체 안으로 옮겨야 한다(Layout/Space/Format/ViewCount 조합). 키 이름만 바꾸면 v8이 무시한다. property-mapping.md 'InfoRowConfig 변환 예제' 참조.",
+      "pattern": "(?<![\\w$])([\"']?)PagingPosition\\1(\\s*:)"
+    },
+    {
+      "id": "CFG_TO_COL_AUTOFITCOLWIDTH",
+      "desc": "Cfg AutoFitColWidth → Col RelWidth. ★레벨 이동 — Cfg에 두면 v8이 무시한다. 대상 컬럼마다 RelWidth 지정(또는 Cfg.FitWidth 검토).",
+      "pattern": "(?<![\\w$])([\"']?)AutoFitColWidth\\1(\\s*:)"
+    },
+    {
+      "id": "CFG_TO_ROW_DATAROWHEIGHT",
+      "desc": "Cfg DataRowHeight → Row Height. ★레벨 이동 — Cfg에 두면 v8이 무시한다. 데이터 행 객체의 Height 로 옮길 것.",
+      "pattern": "(?<![\\w$])([\"']?)DataRowHeight\\1(\\s*:)"
+    },
+    {
+      "id": "CFG_TO_ROW_HEADERROWHEIGHT",
+      "desc": "Cfg HeaderRowHeight → Row Height (Header 행). ★레벨 이동 — Cfg에 두면 v8이 무시한다.",
+      "pattern": "(?<![\\w$])([\"']?)HeaderRowHeight\\1(\\s*:)"
+    },
+    {
+      "id": "CFG_TO_ROW_ROWHEIGHTMAX",
+      "desc": "Cfg RowHeightMax → Row MaxHeight. ★레벨 이동 — Cfg에 두면 v8이 무시한다.",
+      "pattern": "(?<![\\w$])([\"']?)RowHeightMax\\1(\\s*:)"
+    },
+    {
+      "id": "CFG_TO_COL_EDITENTER",
+      "desc": "Cfg EditEnterBehavior → Col AcceptEnters. ★레벨 이동 — Cfg에 두면 v8이 무시한다. 대상 컬럼마다 지정.",
+      "pattern": "(?<![\\w$])([\"']?)EditEnterBehavior\\1(\\s*:)"
+    },
+    {
+      "id": "CFG_TO_COL_FILTERCASE",
+      "desc": "Cfg FilterCaseSensitive → Col CaseSensitive. ★레벨 이동 — Cfg에 두면 v8이 무시한다. v8은 필터/정렬이 같은 Col CaseSensitive 를 쓰므로 SortCaseSensitive 와 값이 다르면 우선순위를 결정해야 한다.",
+      "pattern": "(?<![\\w$])([\"']?)FilterCaseSensitive\\1(\\s*:)"
+    },
+    {
+      "id": "CFG_TO_COL_SORTCASE",
+      "desc": "Cfg SortCaseSensitive → Col CaseSensitive. ★레벨 이동 — Cfg에 두면 v8이 무시한다. FilterCaseSensitive 와 동일 속성으로 합쳐지므로 두 값이 다르면 판단 필요.",
+      "pattern": "(?<![\\w$])([\"']?)SortCaseSensitive\\1(\\s*:)"
+    },
+    {
+      "id": "CFG_TO_ROW_FOCUSSUMROW",
+      "desc": "Cfg FocusSumRow → Row CanFocus (합계/소계 행). ★레벨 이동 — Cfg에 두면 v8이 무시한다.",
+      "pattern": "(?<![\\w$])([\"']?)FocusSumRow\\1(\\s*:)"
+    },
+    {
+      "id": "CFG_TO_ROW_SUMBACKCOLOR",
+      "desc": "Cfg SumBackColor → Row Color (합계 행). ★레벨 이동 — Cfg에 두면 v8이 무시한다. 색상 표기법(#RRGGBB 등)도 함께 확인.",
+      "pattern": "(?<![\\w$])([\"']?)SumBackColor\\1(\\s*:)"
+    },
+    {
+      "id": "CFG_TO_ROW_SUMFONTBOLD",
+      "desc": "Cfg SumFontBold → Row TextStyle (합계 행). ★레벨 이동 + 값 형태 변경 — boolean 이 아니라 TextStyle 값 체계로 옮겨야 한다.",
+      "pattern": "(?<![\\w$])([\"']?)SumFontBold\\1(\\s*:)"
+    },
+    {
+      "id": "CFG_TO_ROW_SUMFONTCOLOR",
+      "desc": "Cfg SumFontColor → Row TextColor (합계 행). ★레벨 이동 — Cfg에 두면 v8이 무시한다.",
+      "pattern": "(?<![\\w$])([\"']?)SumFontColor\\1(\\s*:)"
+    },
+    {
+      "id": "CFG_TO_ROW_HEADERMENU",
+      "desc": "Cfg UseHeaderActionMenu → Row Menu (Header 행). ★레벨 이동. 브릿지 setActionMenu 를 쓰면 Def.Row.Menu 선언이 필요하다(verify 함정) — conventions.md 참조.",
+      "pattern": "(?<![\\w$])([\"']?)UseHeaderActionMenu\\1(\\s*:)"
+    },
+    {
+      "id": "CFG_TO_ROW_GROUPMENU",
+      "desc": "Cfg UseGroupActionMenu → Row Menu (그룹 행). ★레벨 이동. 위와 동일.",
+      "pattern": "(?<![\\w$])([\"']?)UseGroupActionMenu\\1(\\s*:)"
+    },
+    {
+      "id": "CORE_RESET",
+      "desc": "Reset() → dispose() + IBSheet.create() ★맨 치환 금지 — 두 단계 변환이다. v7 Reset(KeepTheme)은 초기 상태로 되돌리고 '새 시트 객체를 반환'해 계속 사용 가능했다. v8 dispose()는 DOM·메모리에서 완전히 제거해 더 이상 사용할 수 없다. 공식 지침(funcs/core/dispose.md): dispose() 후 같은 id로 IBSheet.create() 재생성. dispose 로만 바꾸면 시트가 사라진 채 끝나고, 뒤따르는 재초기화 호출이 죽은 객체를 대상으로 한다. KeepTheme 인자와 반환값 사용처도 함께 재작성할 것.",
+      "pattern": "\\.Reset\\s*\\("
+    },
+    {
+      "id": "PIVOT_SHEET_ID",
+      "desc": "makePivotTable 호출 자체는 1:1이지만 ★피벗 시트 id 규칙이 바뀐다 — v7 '원본id + _Pivot'(접미사) → v8 'pivotSheet_ + 원본id'(접두사). 피벗 시트를 id 로 참조하는 코드(IBSheet.getSheet, document.getElementById, 문자열 조립 등)를 모두 함께 고칠 것. v8 피벗 시트는 DataMerge 미지원, 행 5,000·열 200 초과 시 성능 보장 안 됨. method-mapping.md ShowPivotTable/CreatePivotTable 참조.",
+      "pattern": "\\.makePivotTable\\s*\\("
+    },
+    {
+      "id": "EVENT_ONCLICK_TIMING",
+      "desc": "IBSheet7 OnClick/OnButtonClick 핸들러. ★v8 onClick 은 발생 시점이 v7보다 앞서므로 벤더 지침대로 onAfterClick 을 쓴다. 또 v8에는 Button 전용 클릭 이벤트가 없어 '모든 타입 컬럼'에서 발생하므로 OnButtonClick 을 옮길 때는 컬럼 가드(if col !== 'btnX' return)를 반드시 추가할 것. event-mapping.md 이벤트 대응표 참조.",
+      "pattern": "_On(?:Button)?Click\\s*\\("
+    },
+    {
+      "id": "EVENT_ONSAVEEND_TIMING",
+      "desc": "IBSheet7 OnSaveEnd 핸들러 → v8 onAfterSave. ★발생 시점이 다르다 — v7은 저장 후 데이터 반영·렌더링까지 끝난 상태, v8은 서버 응답을 받은 직후. 핸들러가 '화면에 반영됐다'고 가정해 행을 다시 읽거나 렌더링 상태에 의존하면 전제가 깨진다. event-mapping.md 참조.",
+      "pattern": "_OnSaveEnd\\s*\\("
+    },
+    {
+      "id": "GENERIC_PASCAL_SHEET_METHOD",
+      "desc": "위에 안 잡힌 기타 PascalCase 시트 메서드. 매뉴얼(knowledge/) 확인 후 수동 매핑.",
+      "pattern": "\\b(\\w*[Ss]heet\\w*)\\.([A-Z][A-Za-z0-9]+)\\s*\\("
+    },
+    {
+      "id": "SETMERGESHEET",
+      "desc": "v7 SetMergeSheet(n) → v8 setAutoMerge(dataMerge, headerMerge, prevColumnMerge, ...). ★맨 치환 금지 - 인자 1개가 여러 개로 갈라진다. CFG_MERGESHEET 의 확정 매핑표(2026-08-04 최종)를 써서 setAutoMerge(D, H, P) 순서로 넘긴다(setAutoMerge 인자 순서는 데이터→헤더→앞컬럼이고 MergeSheet 표기 순서와 다르다). ★★v8 setAutoMerge 는 호출 시 Cfg 의 병합 관련 설정이 전부 초기화되고 전달한 인자만 적용된다 - 기존에 Cfg 로 설정해둔 병합 옵션(FixPrevColumnMerge·headMerge·footMerge 등)이 있으면 빠짐없이 다시 넘겨야 한다(벤더 확인). setFixedTop/Bottom 으로 고정한 행은 Head/Foot 영역이 되어 headMerge/footMerge 를 따로 설정해야 한다. GetMergeSheet 는 v8 대응이 없어 Cfg 값을 직접 읽는다.",
+      "pattern": "\\.\\s*SetMergeSheet\\s*\\("
+    },
+    {
+      "id": "V7CONST_RESIDUE",
+      "desc": "v7 전역 상수(ibsheetinfo.js)가 속성/인자 자리가 아닌 곳에 남아 있다 — 비교문·삼항·변수 대입 등. v8 에는 ibsheetinfo.js 가 없으므로 그대로 두면 브라우저에서 '... is not defined' 로 죽는다(검증 3종은 PASS). 값 표는 docs/property-mapping.md 「v7 전역 상수」 — 해당 숫자로 직접 바꾼다. 삼항 중간(cond ? msAll : msNone)처럼 자동 치환이 위험한 자리라 사람이 판단한다.",
+      "pattern": "(?<![\\w.$])(msPrevColumnMerge|msBaseColumnMerge|sizeNoBothScroll|sizeAdvancedAuto|smServerPaging2|smClientPaging|smServerPaging|sizeNoVScroll|sizeNoHScroll|msFixedMerge|msHeaderOnly|smLazyLoad|smGeneral|posBottom|sizeAuto|imeAuto|vsFixed|msNone|imeHan|imeEng|posTop|vsAuto|msAll)(?![A-Za-z0-9_])"
+    },
+    {
+      "id": "CREATE_IBSHEET",
+      "desc": "★v7 시트 생성 자체를 다시 써야 한다. v7 은 ibsheetinfo.js 의 createIBSheet(sheetid, width, height, locale) / createIBSheet2(element, sheetid, width, height, locale) 로 만들고 그 뒤 SetConfig/InitHeaders/InitColumns 로 **명령형** 설정했다. v8 은 IBSheet.create({id, el, options:{Cfg, Cols, Events}, width, height}) 한 번으로 **선언형** 구성한다. 즉 생성+설정 코드를 한 덩어리로 재구성해야 하고 맨 치환이 불가능하다. createIBSheet2 의 첫 인자(element)가 v8 el, 둘째(sheetid)가 id 다. v8 에는 ibsheetinfo.js 가 없으므로 이 함수는 남겨두면 ReferenceError 다. samples/tobe/*.jsp 의 IBSheet.create 형태를 참고한다.",
+      "pattern": "(?<![\\w.$])createIBSheet2?\\s*\\("
+    },
+    {
+      "id": "IBSHEET_OBJECT_DECL",
+      "desc": "v7 `new ibsheetObject()` 선언 - v8 에는 이 생성자가 없다. v8 은 IBSheet.create(...) 의 반환값을 변수에 담는다(CREATE_IBSHEET 참고). 그대로 두면 브라우저에서 'ibsheetObject is not defined' 로 죽는다(검증 3종은 PASS).",
+      "pattern": "(?<![\\w$])new\\s+ibsheetObject\\s*\\("
+    },
+    {
+      "id": "INITHEADERS",
+      "desc": "v7 InitHeaders(headers, info) - v8 에 대응 함수가 없다. 헤더 타이틀은 각 Col 의 Header 로, 헤더 기능(Sort/ColMove/ColResize/HeaderCheck)은 Cfg 로 옮긴다. v7 은 'A|B|C' 파이프 문자열로 다단 헤더를 표현했으므로 v8 Header 배열/객체로 재구성해야 한다. CREATE_IBSHEET 의 선언형 재구성과 함께 처리한다.",
+      "pattern": "\\.\\s*InitHeaders\\s*\\("
+    },
+    {
+      "id": "INITCOLUMNS",
+      "desc": "v7 InitColumns(cols) - v8 에 대응 함수가 없다. 컬럼 정의는 IBSheet.create 의 options.Cols 배열로 옮긴다. 컬럼 Name 접두사 금지, SaveName->Name, InsertEdit->AddEdit, UpdateEdit->ChangeEdit 등 개별 속성 변환은 property-mapping.md 참고. CREATE_IBSHEET 의 선언형 재구성과 함께 처리한다.",
+      "pattern": "\\.\\s*InitColumns\\s*\\("
+    },
+    {
+      "id": "CFG_FROZENCOL",
+      "desc": "Cfg FrozenCol: n → v8 에 대응 Cfg 속성이 없다. ★구조 이동 - 고정할 열의 정의를 **최상위 LeftCols 배열**로 옮긴다(오른쪽은 RightCols). 개수를 넘기는 속성이 아니다. 생성 후 동적 변경은 setFixedLeft(n). 근거: v8 appx/init-structure.md 의 LeftCols/RightCols.",
+      "pattern": "([\\\"']?)FrozenCol\\1(\\s*:)"
+    },
+    {
+      "id": "SETTHEME",
+      "desc": "v7 SetTheme(prefix, folder) → v8 setTheme(prefix, csspath, render). ★맨 치환 금지 - 둘째 인자의 의미가 바뀐다: v7 은 **테마 폴더명**, v8 은 **css 파일 경로**다. v8 은 셋째 인자 render(즉시 반영, default 1)가 추가됐고, 0 이면 rerender() 를 따로 불러야 한다. prefix 는 css 클래스 접두어로 v7·v8 동일 개념(v8 default \"IB\").",
+      "pattern": "\\.\\s*SetTheme\\s*\\("
+    },
+    {
+      "id": "SETHIGHLIGHTAFTERSORT",
+      "desc": "v7 SetHighlightAfterSort(focus) → v8 은 **초기화 Cfg.HighlightAfterSort** 로 설정한다(메서드가 아니라 속성). ★v8 값이 0~4 로 늘었고 **default 가 1** 이다(v7 0=포커스 클리어 / 1=포커스 유지+이동 / 2=포커스 유지+스크롤 초기화 는 v8 과 같은 의미). v8 추가값: 3=항상 첫 행 포커스, 4=포커스 행 위치 유지. Since core 8.1.0.63.",
+      "pattern": "\\.\\s*SetHighlightAfterSort\\s*\\("
+    },
+    {
+      "id": "SETPAGECOUNT",
+      "desc": "v7 SetPageCount(page, renderPage) → v8 은 **초기화 Cfg.PageLength** 로 설정한다(메서드가 아니라 속성). 첫 인자 page 가 PageLength 에 해당한다. ★둘째 인자 renderPage(smServerPaging2 전용 렌더 단위)는 v8 에 직접 대응이 없다 - MaxPages 등으로 재설계할지 화면별로 판단한다. 서버 페이징(SearchMode 3,4,5)에서는 PageLength 와 서버가 주는 건수를 반드시 맞춰야 한다.",
+      "pattern": "\\.\\s*SetPageCount\\s*\\("
+    },
+    {
+      "id": "SETCOUNTFORMAT",
+      "desc": "v7 SetCountFormat(format) → v8 은 **초기화 Cfg.InfoRowConfig.Format** 으로 설정한다(메서드가 아니라 구조 이동). v7 예약어(TOTALROWS·SEARCHROWS·INSERTROWS·UPDATEROWS·DELETEROWS·ROWCOUNT·BOTTOMDATA·FILTEREDCOUNT 등)가 v8 에서 그대로인지 개별 확인이 필요하다 - property-mapping.md 의 CountFormat 행 참고.",
+      "pattern": "\\.\\s*SetCountFormat\\s*\\("
+    },
+    {
+      "id": "SETCOUNTPOSITION",
+      "desc": "v7 SetCountPosition(position) → v8 은 **초기화 Cfg.InfoRowConfig** 로 설정한다(메서드가 아니라 구조 이동). v7 은 0=사용안함/1=좌상/2=우상/3=좌하/4=우하 의 단일 number 였고, v8 은 InfoRowConfig 의 Layout·Spacing 등으로 분리돼 **값을 그대로 옮길 수 없다**. 포맷을 지정하지 않으면 v7 기본값은 [BOTTOMDATA / TOTALROWS] 였다.",
+      "pattern": "\\.\\s*SetCountPosition\\s*\\("
+    },
+    {
+      "id": "CFG_COLPAGE",
+      "desc": "Cfg ColPage → ColPage + ColPageLength 로 갈린다. ★값의 의미가 다르다 - v7 ColPage 는 **한번에 표시할 컬럼의 개수**(default 사용안함)이고 v8 ColPage 는 **컬럼 가상 렌더링 사용 여부**다. 개수는 ColPageLength 로 옮긴다: ColPage:5 => ColPage:1 + ColPageLength:5. ★v8 제약: SearchMode 0·2 에서만 사용 가능하고 Merge 와 함께 쓸 수 없다 - 머지를 쓰는 화면이면 ColPage 를 빼는 편이 낫다.",
+      "pattern": "(?<![\\w$])([\"']?)ColPage\\1(\\s*:)"
+    },
+    {
+      "id": "CFG_ONEPAGEFILTER",
+      "desc": "Cfg OnePageFilter → v8 에 대응 속성이 없다. v7 1 = 서버 호출 없이 현재 페이지 안에서만 필터링(SearchMode:4 에서만 동작, default 0). v8 은 서버 페이징에서 필터가 기본적으로 조회된 데이터 안에서만 동작하므로 **1 이면 속성을 지우면 그대로 재현된다**. ★0 에 의존해 OnChangeFilter + DoSearchPaging 으로 직접 재조회하던 화면이라면 v8 에서는 onBeforeFilter 에서 getFilter() 로 조건을 모아 doSearchPaging() 으로 보내도록 다시 쓴다. 근거: v8 props/cfg/search-mode.md 서버 페이징 절.",
+      "pattern": "(?<![\\w$])([\"']?)OnePageFilter\\1(\\s*:)"
+    }
+  ]
+}

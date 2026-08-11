@@ -1,0 +1,15 @@
+# docs/static/XML
+
+1. [조회 DATA 요소](/docs/static/XML/data1)
+2. [조회/저장 ETC-DATA 요소](/docs/static/XML/etcData1)
+3. [조회 MESSAGE 요소](/docs/static/XML/message1)
+4. [조회 RESULT 요소](/docs/static/XML/result1)
+5. [저장 RESULT 요소](/docs/static/XML/result2)
+6. [조회 XML](/docs/static/XML/searchXML1)
+7. [저장 XML](/docs/static/XML/searchXML2)
+8. [조회 SHEET 요소](/docs/static/XML/sheet1)
+9. [저장 SHEET 요소](/docs/static/XML/sheet2)
+10. [조회 TD 요소](/docs/static/XML/td1)
+11. [저장 TD 요소](/docs/static/XML/td2)
+12. [조회 TR 요소](/docs/static/XML/tr1)
+13. [저장 TR 요소](/docs/static/XML/tr2)
