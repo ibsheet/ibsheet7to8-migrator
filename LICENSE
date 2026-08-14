@@ -1,0 +1,158 @@
+IBSheet7 → IBSheet8 Migration Toolkit (ibsheet7to8-migrator)
+독점 소프트웨어 라이선스 / Proprietary Software License
+
+Copyright (c) 2026 아이비리더스 (IB Leaders Co., Ltd.). All rights reserved.
+
+
+═══════════════════════════════════════════════════════════════════════
+한국어
+═══════════════════════════════════════════════════════════════════════
+
+1. 소유권
+
+   본 소프트웨어(이하 "툴킷")와 이에 포함된 모든 소스 코드, 변환 규칙,
+   지식 문서, 예제는 아이비리더스의 자산이며 저작권법으로 보호됩니다.
+   본 라이선스는 툴킷에 대한 소유권을 이전하지 않습니다.
+
+2. 사용 허락 범위
+
+   아이비리더스와 유효한 계약(구매·용역·기술지원 등)을 체결한 고객(이하
+   "이용자")에게 아래 범위의 비독점적·양도불가 사용권을 부여합니다.
+
+   가. 이용자가 정당한 권리를 보유한 IBSheet7 기반 소스 코드를 IBSheet8로
+       전환하기 위한 목적의 내부 사용
+   나. 이용자의 개발 환경 내 설치 및 실행
+   다. 이용자의 프로젝트 컨벤션에 맞춘 설정 파일(migrate.config.json) 작성
+       및 변환 규칙(engine/rules/) 보강
+
+3. 브릿지 헬퍼의 배포 (중요)
+
+   `helpers/ibsheet-migration.js`는 툴킷이 생성한 변환 결과가 실행 시점에
+   호출하는 런타임 파일입니다. 이용자는 제2항의 사용 범위 내에서 다음을
+   할 수 있습니다.
+
+   가. 본 파일을 이용자의 웹 애플리케이션에 복사·배포
+   나. 이용자의 프로젝트 요구에 맞춘 수정 (수정 시 툴킷 갱신과의 충돌은
+       이용자 책임)
+
+   단, 본 파일을 툴킷 사용 목적과 무관하게 단독으로 재배포하거나 제3자에게
+   제공하는 것은 허용되지 않습니다.
+
+4. 금지 사항
+
+   가. 툴킷 전부 또는 일부를 제3자에게 판매·대여·재배포·공개하는 행위
+       (제3항의 브릿지 헬퍼 배포는 예외)
+   나. 툴킷을 기반으로 경쟁 제품 또는 파생 도구를 제작·배포하는 행위
+   다. 저작권 표시, 라이선스 고지, 배포처 정보를 제거하거나 변경하는 행위
+   라. 계약 범위를 벗어난 조직·프로젝트에서의 사용
+
+5. 제3자 권리
+
+   가. IBSheet8 라이브러리 및 그 라이선스는 본 툴킷에 포함되지 않으며,
+       별도로 도입해야 합니다.
+   나. 툴킷의 지식 문서는 IBSheet 공식 매핑 자료를 근거로 작성되었습니다.
+       벤더 원문 매뉴얼의 권리는 해당 권리자에게 있습니다.
+
+6. 보증의 부인 및 책임의 제한
+
+   툴킷은 "있는 그대로" 제공되며, 특정 목적 적합성을 포함한 어떠한 명시적·
+   묵시적 보증도 하지 않습니다.
+
+   툴킷은 정적 코드 변환과 정합성 검증(잔존·구문·함수 파리티)까지 수행하며,
+   변환 결과의 실제 동작을 보장하지 않습니다. 특히 다음은 이용자의 책임입니다.
+
+   가. 변환 결과에 대한 브라우저 동작 검증(QA)
+   나. 백엔드(서버 컨트롤러, 매퍼 SQL 등)의 정합성 확인 및 개발
+   다. 브릿지 헬퍼(`helpers/ibsheet-migration.js`)의 배포 여부 확인
+       — 검증 3종은 정적 검사이므로 배포 누락을 탐지하지 못합니다
+   라. 원본 소스의 백업
+
+   아이비리더스는 툴킷의 사용 또는 사용 불능으로 발생한 직접적·간접적·
+   부수적 손해에 대해 책임지지 않습니다.
+
+7. 문의
+
+   본 라이선스 범위를 벗어난 사용을 원하시거나 해석에 의문이 있으시면
+   아래로 문의해 주십시오.
+
+   아이비리더스 · 기술지원 1644-5615 (ARS 2번) · https://www.ibsheet.com
+
+
+═══════════════════════════════════════════════════════════════════════
+English (Reference Translation)
+═══════════════════════════════════════════════════════════════════════
+
+1. Ownership
+
+   This software (the "Toolkit"), including all source code, migration
+   rules, knowledge documents, and samples, is the property of IB Leaders
+   Co., Ltd. and is protected by copyright law. This license does not
+   transfer ownership.
+
+2. Grant of License
+
+   A non-exclusive, non-transferable right to use the Toolkit is granted
+   to customers holding a valid agreement with IB Leaders (the "Licensee"),
+   limited to:
+
+   a. Internal use for migrating IBSheet7-based source code that the
+      Licensee lawfully owns to IBSheet8;
+   b. Installation and execution within the Licensee's development
+      environment;
+   c. Authoring configuration (migrate.config.json) and extending
+      migration rules (engine/rules/) to fit the Licensee's conventions.
+
+3. Deployment of the Bridge Helper (Important)
+
+   `helpers/ibsheet-migration.js` is a runtime file invoked by the output
+   the Toolkit produces. Within the scope of Section 2, the Licensee may:
+
+   a. Copy and deploy this file into the Licensee's web application;
+   b. Modify it to fit project requirements (conflicts arising from
+      Toolkit updates are the Licensee's responsibility).
+
+   Standalone redistribution of this file to third parties, unrelated to
+   use of the Toolkit, is not permitted.
+
+4. Restrictions
+
+   a. Selling, leasing, redistributing, or publicly disclosing the Toolkit
+      in whole or in part (except as permitted in Section 3);
+   b. Creating or distributing competing or derivative tools based on the
+      Toolkit;
+   c. Removing or altering copyright notices, license terms, or vendor
+      information;
+   d. Use by organizations or on projects outside the agreed scope.
+
+5. Third-Party Rights
+
+   a. The IBSheet8 library and its license are not included and must be
+      obtained separately.
+   b. The knowledge documents are based on official IBSheet mapping
+      materials. Rights to the vendor's original manuals remain with their
+      respective owners.
+
+6. Disclaimer of Warranty and Limitation of Liability
+
+   THE TOOLKIT IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING FITNESS FOR A PARTICULAR PURPOSE.
+
+   The Toolkit performs static code migration and consistency verification
+   (residue scan, syntax check, function parity). It does not guarantee
+   runtime behavior of the migrated output. The Licensee is responsible for:
+
+   a. Browser-level QA of the migrated output;
+   b. Backend (server controllers, mapper SQL) verification and development;
+   c. Confirming deployment of the bridge helper — the three verification
+      scripts are static checks and cannot detect a missing deployment;
+   d. Backing up original source code.
+
+   IB Leaders shall not be liable for any direct, indirect, or incidental
+   damages arising from use of or inability to use the Toolkit.
+
+7. Contact
+
+   IB Leaders · Technical Support 1644-5615 · https://www.ibsheet.com
+
+   In case of any discrepancy between the Korean and English versions,
+   the Korean version shall prevail.

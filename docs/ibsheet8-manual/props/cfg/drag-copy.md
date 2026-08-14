@@ -1,0 +1,33 @@
+# DragCopy ***(cfg)***
+
+<!-- synonyms: DragCopy, drag copy, drag move sheet, cross sheet drag, drag between sheets, 시트 간 드래그, 시트 간 행 이동, 드래그 복사, 드래그 이동, 원본 시트 상태, Deleted 유지, 시트 간 행 복사, 두 시트 드래그 -->
+
+> 두 개의 시트 사이에서 행 이동시 원본 시트의 행 상태를 변경할지 여부를 설정합니다.
+
+### Type
+`boolean`
+
+### Options
+|Value|Description|
+|-----|-----|
+|`0(false)`|드래그 이동시 원본 시트의 행이 `Deleted` 상태로 변경됨|
+|`1(true)`|드래그 이동시 원본 시트의 행은 변화없음|
+
+
+### Example
+```javascript
+options.Cfg = {
+   "DragCopy": true       //마우스 드래그를 통한 행 이동시 원본시트의 상태변화 없음
+};
+```
+
+### Read More
+- [CanDrag cfg](/docs/props/cfg/can-drag)
+- [CanDrag row](/docs/props/row/can-drag)
+- [onEndDrag event](/docs/events/on-end-drag)
+
+### Since
+
+|product|version|desc|
+|---|---|---|
+|core|8.0.0.0|기능 추가|

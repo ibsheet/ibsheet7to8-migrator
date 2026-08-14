@@ -1,0 +1,36 @@
+# getRowHeight ***(method)***
+
+<!-- synonyms: getRowHeight, get-row-height, 행 높이, 로우 높이, 픽셀, 크기, row height, pixel -->
+
+> 특정행의 높이를 pixel 단위로 확인합니다.
+
+### Syntax
+```javascript
+number getRowHeight( row );
+```
+
+### Parameters
+
+|Name|Type|Required| Description |
+|----------|-----|---|----|
+|row |`object`|<span class='required'>필수</span>|[데이터 로우 객체](/docs/appx/row-object)|
+
+### Return Value
+***number*** : 행의 높이 (pixel 단위)
+
+### Example
+```javascript
+var r = sheet.getFirstVisibleRow();
+//첫번째 행의 높이를 확인
+var height = sheet.getRowHeight(r);
+```
+
+### Read More
+- [getBodyHeight method](./get-body-height)
+
+
+### Since
+
+|product|version|desc|
+|---|---|---|
+|core|8.0.0.0|기능 추가|

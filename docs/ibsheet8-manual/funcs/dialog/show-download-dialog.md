@@ -1,0 +1,78 @@
+# showDownloadDialog ***(method)***
+
+<!-- synonyms: show download dialog, download dialog, excel download dialog, save as dialog, export dialog, download popup, 다운로드 다이얼로그, 엑셀 다운로드 창, 다운로드 팝업, 내려받기 다이얼로그, 저장 창, showDownloadDialog 메소드 -->
+
+> 시트의 내용을 엑셀이나 Text형식으로 다운로드 받기 위한 다이얼로그 창을 오픈합니다.  
+> 해당 함수는 `/plugins/ibsheet-dialog.js` 파일이 포함되어 있어야 사용하실 수 있습니다.  
+> 이 함수는 내부적으로 `down2Excel`을 호출하므로 [AutoExcelMode](/docs/props/cfg/auto-excel-mode) 값에 따라 필요 조건이 달라집니다.  
+> - 기본(서버 모듈, `AutoExcelMode:1`): `/plugins/ibsheet-excel.js` 로드와 `Cfg.Export.Url`(`jsp`/`aspx`) 설정이 필요합니다.  
+> - 클라이언트 모듈(`AutoExcelMode:2`): 내부적으로 `exportData`로 처리되어 브라우저에서 다운로드하므로 `ibsheet-excel.js`/`Export.Url`이 필요 없습니다.  
+> 다이얼로그 커스터마이징은 [Dialog Templates appendix](/docs/appx/dialog-templates)를 참고하세요.
+<!--!
+<br/>
+> **<mark>주의</mark>: [UseSpreadSheet](/docs/props/cfg/use-spread-sheet) 기능에서는 지원되지 않습니다.**
+!-->
+
+### 상세 설명
+> `rowchk` 인자를 사용하여 `1(default)`인 경우 행 선택 열 생성, `0`인 경우 행 선택 열을 생성하지 않습니다.  
+> `title` 인자에는 원하는 타이틀명을 입력할 수 있습니다. 입력하지 않으면 기본적으로 파일 다운로드라는 타이틀명을 사용합니다.  
+> `title` 에 `html 태그`를 사용할 수 있습니다. ex) `<span style='color:red;'>사내 정규직 지원 리스트</span>`  
+> `downParams.downCols` 값이 `"Visible"`일 경우 `Visible:1` 값인 컬럼들만 다이얼로그에 보여집니다.
+
+
+![다운로드](/assets/imgs/DownloadDialog.png)
+
+### Syntax
+```javascript
+void showDownloadDialog(width, height, name, rowchk, title, downParams);
+```
+
+### Parameters
+
+|Name|Type|Required| Description |
+|----------|-----|---|----|
+|width|`number`|<span class='optional'>선택</span>|다이얼로그 창의 너비 (`default: 700`)|
+|height|`number`|<span class='optional'>선택</span>|다이얼로그 창의 높이 (`default: 400`)|
+|name|`string`|<span class='optional'>선택</span>|다이얼로그 시트 이름 (`default: "excelDownloadSheet_" + 시트id`)|
+|rowchk|`number`|<span class='optional'>선택</span>|행 선택 열 기능 사용 (`default: 1`)|
+|title|`string`|<span class='optional'>선택</span>|다이얼로그 타이틀 (`default: "파일 다운로드"`)|
+|downParams|`object`|<span class='optional'>선택</span>|[down2Excel](/docs/funcs/excel/down-to-excel) 인자 모두 사용 가능<br>|
+
+### Return Value
+***none***
+
+### Example
+```javascript
+//다운로드 다이얼로그 오픈
+sheet.showDownloadDialog(600, 400);
+
+//객체방식
+sheet.showDownloadDialog({
+  width: 600,
+  height: 400,
+  name: "excelDownSheet",
+  downParams: {
+    titleText:"||2020년 4월 교통비\r\n|||||||홍길동",
+    userMerge:"0,2,1,4",
+    downCols:"Visible"
+  }
+});
+```
+
+### Read More
+- [Dialog Templates appendix](/docs/appx/dialog-templates)
+- [showDialog static](/docs/static/show-dialog)
+- [Dialog appendix](/docs/appx/dialog)
+- [down2Excel method](/docs/funcs/excel/down-to-excel)
+- [down2Text method](/docs/funcs/excel/down-to-text)
+- [showUploadDialog method](./show-upload-dialog)
+
+### Since
+
+|product|version|desc|
+|---|---|---|
+|dialog|0.0.0|기능 추가|
+|dialog|0.0.2|다운로드할 시트가 `Cfg.MultiRecord` 기능을 사용할 때 대응 할 수 있도록 수정|
+|dialog|0.0.3|`showExcelDownloadDialog`에서 `showDownloadDialog`로 이름 변경|
+|dialog|0.0.5|`downParams.downCols` 값이 `"Visible"`일 경우 보여지는 컬럼 변경|
+|dialog|1.0.46|HTML/CSS를 dlgTemplates 외부 템플릿 파일로 분리|

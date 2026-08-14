@@ -1,0 +1,31 @@
+# EditSelect ***(cfg)***
+
+<!-- synonyms: EditSelect, edit select, select on edit, auto select input, select input value, 편집 시 선택, 편집 진입 선택, input 전체 선택, 편집 값 선택, 편집모드 선택, 편집 자동 선택, 편집 시 값 선택 -->
+
+> 편집 될 때 `input` 의 값이 선택될지 여부를 설정할 수 있습니다.
+
+### Type
+`number`
+
+### Options
+|Value|Description|
+|-----|-----|
+|`0`|편집 시 선택안 함|
+|`1`|마우스로 편집 모드로 들어갈 시 선택함|
+|`2`|키보드 키로 편집 모드에 들어갈 시 선택함|
+|`7`|편집 모드로 들어갈 시 항상 선택(`default`)|
+
+### Example
+```javascript
+options.Cfg :{
+    EditSelect: 0
+};
+```
+
+### Read More
+
+### Since
+
+|product|version|desc|
+|---|---|---|
+|core|8.0.0.0|기능 추가|
