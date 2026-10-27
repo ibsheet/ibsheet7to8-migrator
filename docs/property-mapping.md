@@ -46,7 +46,7 @@ var OPT = {
 | `AutoClearHeaderCheck` | ❌ 공개 API 로는 대응 없음 | ❌ | v7 은 **`RemoveAll` 호출·조회 시 헤더 전체체크를 자동 초기화**하는 속성이다. 이전에 v8 의 특정 함수로 안내했으나 ①그 함수는 **비공개 API** 라 쓸 수 없고 ②의미도 다르다(데이터 행 값에 맞춰 헤더 체크를 동기화하는 기능). `HeaderCheckMode` 도 "모든 행 vs 보이는 행만 체크" 라 다른 기능이다. **조회·삭제 후 직접 체크를 해제**하도록 코드로 처리한다 — 2026-08-04 정정 |
 | `AutoCloseDialog` | `showDialog()` + `CloseOut` | ✅ | Dialog 옵션으로 이동 |
 | `AutoCloseDialogTimeout` | `showDialog()` + `CloseTimeout` | ✅ | Dialog 옵션으로 이동 |
-| `AutoFitColWidth` | `(col) RelWidth` | ⚠️ | **레벨 이동 — Cfg에 두면 v8이 무시한다.** 해당 컬럼 객체마다 설정으로 옮길 것(맨 치환 대상 아님). (기존 메모: 컬럼 속성으로 이동) |
+| `AutoFitColWidth` | `(col) RelWidth` | ⚠️ | **레벨 이동 — 해당 컬럼 객체마다 `RelWidth` 로 옮길 것**(맨 치환 대상 아님, 벤더 마이그레이션 문서 `migration/migration-02-02.md` 와 같다). v8 에도 동명 `(cfg) AutoFitColWidth` 가 있지만 **기본적으로 쓰지 않는다**(방침, 2026-10-27). v7 열 속성 `FitColWidth:0`(비율 조정에서 제외)인 열에는 `RelWidth` 를 주지 않는다 — 아래 「추가 Col 속성」 참고 |
 | `AutoRowHeight` | `(cfg) AutoRowHeight` | ⚠️ | **이름 동일 — 치환하지 말 것.** `Wrap`은 v8에서 적용 *조건*일 뿐 대체물이 아니다. ★**default 반대**(v7 `1`=사용 / v8 `0`=사용 안함) → v7에서 생략했다면 v8에 `AutoRowHeight:true` 명시 필요. v8 제약: `SearchMode` 0·3에서만 지원 / `Lines`·`Html`·`Img`·`Button` 타입이나 `Wrap`·`HtmlPrefix`·`HtmlPostfix`·`TextSize` 속성 컬럼이 1개 이상 있어야 적용(아니면 내부적으로 `false`) / 시트 생성 시에만 반영 |
 | `AutoSumCalcMode` | `(cfg) CalcMergeMode` | ✅ | 이름 변경 (v8 매뉴얼 `props/cfg/calc-merge-mode.md` 확인). 병합 셀의 합계 계산 방식 |
 | `CachePageCount` | `(cfg) MaxPages` | ✅ | 이름 변경 |
@@ -631,6 +631,7 @@ IBSheet7 `InitColumns` 인자 중 위 Col 대조표에 없던 항목이다.
 | `EmptyToReplaceChar` | `(Col)CanEmpty` | ✅ |  |
 | `ExceptKeys` | `(Col)EditMask` | ✅ | 입력 **제외** 문자는 정규식 부정 클래스로 옮긴다(`props/col/edit-mask.md`) |
 | `ExcludeEmpty` | `(col) ExcludeEmpty` | ✅ | **동명·동일 의미.** v7 은 `InitColumns` 의 컬럼 속성(`AutoSum` 타입·소계행 평균 계산 시 빈 값 제외), v8 은 `col` 속성으로 합계·소계/누계행의 평균·건수 계산에서 `0`/빈 값 포함 여부를 정한다. 이전에 "미지원"으로 적혀 있었다 — 2026-08-04 정정 |
+| `FitColWidth` | 그 열에 `(col) RelWidth` 를 주지 않음 | ⚠️ | v7 `FitColWidth:0` = 이 열은 `AutoFitColWidth`·`FitColWidth()` 의 비율 조정에서 **제외**(default `1`, `funcs/init/InitColumns.md`). v8 에는 같은 이름의 열 속성이 없다 — 그대로 두면 v8 이 모르는 키라 **오류 없이 무시**된다. `AutoFitColWidth` 를 `RelWidth` 로 옮길 때 **이 열만 `RelWidth` 를 빼고** 너비를 고정한다(`RelWidth` 는 남는 너비를 `RelWidth` 열끼리 나눈다, `props/col/rel-width.md`). 단 `fitColWidth()` 를 직접 부르면 이 열도 비율 조정 대상이 될 수 있다 — 화면에서 확인. 고객 코드에서 체크·삭제·상태 열에 흔히 쓰인다(LUSH 화면 실측) |
 | `FullInput` | ❌ 대응 없음 | ❌ | 미지원 |
 | `GroupSumType` | `(Col)GroupSubTotal` | ✅ |  |
 | `HoverUnderline` | `(Col)Class` | ✅ |  |

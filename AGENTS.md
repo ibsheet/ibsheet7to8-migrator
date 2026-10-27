@@ -194,6 +194,7 @@ python ./verify/fn_parity.py   <원본> <출력파일>     # ASIS 함수 누락 
 - `SearchMode:2` → `0` (**의도된 성능 상향** — 아래 「SearchMode 상향 정책」 참고) / `SaveName`→`Name` / `UpdateEdit`→`ChangeEdit` / `InsertEdit`→`AddEdit`
 - `ColMerge`는 **치환하지 않는다** — IBSheet8에도 동명 `ColMerge`(col)이 같은 의미로 존재한다. `Span`은 cell의 colspan으로 전혀 다른 개념
 - `Type:"Combo"`→`"Enum"` / `"CheckBox"`→`"Bool"` / `"Status"`→`Extend:IB_Preset.STATUS` / `"DelCheck"`→`Extend:IB_Preset.DelCheck`
+- **모든 컬럼에 v7 원래 Type 을 `orgType` 으로 보존** — `{Type:"Text", orgType:"Status", Extend:IB_Preset.STATUS}`. 브릿지 `setValue2` 가 `orgType=="Status"` 로 행 상태를 처리한다. `initconv` 는 자동, 직접 옮기는 컬럼은 판단 변환에서 넣는다(`docs/conventions.md` §3)
 - **★ IBSheet8은 기능이 본체 + 플러그인으로 나뉘어 있다** — 아래 「런타임 의존」 참고. 본체만 넣으면
   변환 결과가 **검증 3종 PASS인데 브라우저에서 죽는다.** 리포트에 반드시 함께 적는다
 - 행 상태: `I`→`Added`, `U`→`Changed`, `D`→`Deleted`, `R`→`""`
@@ -408,7 +409,7 @@ IBSheet7 은 `ibsheetinfo.js` 에서 `msAll`·`smLazyLoad` 같은 전역 상수�
 | 함수 | 용도 |
 |---|---|
 | `addRow2(row,lvl)` | IBSheet7 `DataInsert` 대체 (인덱스 위치별 `next`/`parent` 구성) |
-| `removeRow2(...)` | `removeRow` + `onRowDelete` 이벤트 발생 |
+| `removeRow2(row)` | IBSheet7 `RowDelete` 대체 — `removeRow` + 삭제 직전 `onRowDelete` 발생. `RowDelete(r,c,0)`(이벤트 끔)은 공식 `removeRow`. v7 의 2·3번째 인자는 넘기지 않는다 |
 | `computeSum(col,start,end,isFullSum)` | 단일 숫자 컬럼의 행 범위 합계 (인덱스/행객체 모두 허용) |
 
 **기타**

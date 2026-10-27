@@ -178,7 +178,7 @@ var mySheet = IBSheet.create({
 | `MoveColumnFail()` | `onBeforeColMove` 이벤트 return | ⚠️ | 이벤트에서 `return true`로 이동 취소 |
 | `SaveNameCol()` | (열 이름 기반 참조) | ✅ | col이 name으로 매핑됨 |
 | `SetHeaderMode()` | 초기화시 `Def.Col` 속성 설정 | ✅ | `Def.Col: {CanResize:0, CanMove:0}` |
-| `FitColWidth()` | `fitColWidth()` | ✅ | 인자가 `"10\|50\|30"` → `[10,50,30]` 배열로 변경 |
+| `FitColWidth()` | `fitColWidth()` | ✅ | 인자가 `"10\|50\|30"` → `[10,50,30]` 배열로 변경. ★**열에 `RelWidth` 가 있어도 동작한다**(최근 패치, 2026-10-27 확인). v8 매뉴얼 `funcs/core/fit-col-width.md` 의 "`RelWidth` 사용 시 정상 지원되지 않음" 주의 문구는 낡았다(공개 최신본에도 아직 남아 있음) — 그 문구를 근거로 `rerender()` 로 바꾸거나 호출을 지우지 말고 `fitColWidth()` 로 옮긴다 |
 | `FitSize()` | `fitSize()` | ⚠️ | 너비만 지원, 높이 지원불가. `getCols().forEach(c=>fitSize(c))` |
 | `FitSizeCol()` | `fitSize()` | ✅ | |
 | `GetExtendLastCol(), SetExtendLastCol()` | 초기화시 마지막 열에 `RelWidth:1` 설정 | ✅ | `Cols: [..., {RelWidth:1}]` |
@@ -246,7 +246,7 @@ var mySheet = IBSheet.create({
 | `GetSelectRow(), SetSelectRow()` | `getFocusedRow()`, `focus()` | ✅ | `getFocusedRow()` / `focus(getRowByIndex7(12), getFocusedCol())` (표준 헬퍼) |
 | `LastRow()` | `getLastRow()` | ✅ | 반환값: 숫자 → 행 object |
 | `RowCount()` | `getRowsByStatus("Deleted").length` 등 | ⚠️ | 상태별 건수: `getRowsByStatus("Deleted").length` |
-| `RowDelete()` | `removeRow2()` | ✅ | **표준 헬퍼** — 삭제 전 `onRowDelete` 발생. 이벤트가 불필요하면 공식 `removeRow()` |
+| `RowDelete()` | `removeRow2()` | ✅ | **표준 헬퍼** — 삭제 직전 `onRowDelete` 발생. v7 은 세 번째 인자 `event` 를 `0` 으로 줄 때만 이벤트가 없었다(v7 매뉴얼의 "Default: 0" 은 실제와 다름) → `RowDelete(r,c,0)` 은 공식 `removeRow()`. ★v7 의 2·3번째 인자(`Confirm`·`event`)를 넘기지 말 것 — v8 은 `nomerge`·`norender` 다. 행 인자는 `getRowByIndex7(idx)`, 생략 시 `getFocusedRow()` (`conventions.md` §8) |
 | `DataInsert()` | `addRow2()` | ✅ | **표준 헬퍼** `addRow2(row, lvl)` — IBSheet7 인덱스 위치를 `next`/`parent`로 변환. 인자 없으면 포커스 행 아래 추가. **공식 `addRow`에 index 인자 불가** |
 | `DataCopy()` | `copyRow()` | ✅ | row 파라미터 필수 |
 | `DataMove()` | `moveRow()` | ✅ | |

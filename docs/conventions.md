@@ -51,6 +51,7 @@
 > `loadText`·`directDown2Excel`·`directLoadExcel` 은 `plugins/ibsheet-excel.js`, `showFindDialog`·`showPivotDialog` 계열은 `plugins/ibsheet-dialog.js` 소속이다.
 > 엑셀·텍스트 계열은 **서버 모듈 설치까지** 필요하다. 전체 표는 `AGENTS.md` 「런타임 의존」.
 - `Type:"Combo"` → `Type:"Enum"`, `Type:"CheckBox"` → `Type:"Bool"`.
+- **모든 컬럼에 v7 원래 `Type` 값을 `orgType` 으로 남긴다** — `{Type:"Text", orgType:"Status", Extend:IB_Preset.STATUS}`. v7 Type 은 v8 Type 과 1:1 이 아니라 바꾸고 나면 원래 타입을 알 수 없다. 브릿지 `setValue2` 가 `orgType=="Status"` 로 행 상태를 다룬다(§4). v8 은 모르는 키라 무시하므로 동작에 영향이 없다. `initconv` 는 자동으로 넣고, `convert` 는 `Combo`·`CheckBox` 치환 때 넣는다 — 나머지(직접 옮기는 컬럼)는 판단 변환에서 넣는다.
 - `SearchMode:2` → `SearchMode:0` — **정책상 상향**(IBSheet8 강점인 FastLoad 가상 스크롤). IBSheet8이 `2`를 못 쓰는 게 아니다(오히려 v8 기본값). 제약에 걸리면 `2` 유지 → `AGENTS.md` 「SearchMode 상향 정책」. `SearchMode:4`는 유지.
 
 ## 4. 행 상태값
@@ -127,7 +128,9 @@ if (mySheet.getRowStatus(mySheet.getRowByIndex7(i)) == "Added") { ... }
 ## 8. 행 추가/복사 (index 인자 금지)
 
 - `DataInsert(idx)` → **`addRow2(idx)`** (표준 헬퍼 — IBSheet7 인덱스를 `next`/`parent`로 변환, 트리는 `addRow2(idx, lvl)`). **공식 `addRow`에 index 인자 불가** — 직접 쓸 때는 `addRow({next: sheet.getFirstRow()})` 형태.
-- `RowDelete(idx)` → **`removeRow2(row)`** (표준 헬퍼 — 삭제 전 `onRowDelete` 발생). 이벤트가 불필요하면 공식 `removeRow`.
+- `RowDelete(idx)` → **`removeRow2(getRowByIndex7(idx))`** (표준 헬퍼 — 삭제 직전 `onRowDelete` 발생). v7 `RowDelete` 는 세 번째 인자 `event` 를 `0` 으로 주지 않는 한 `OnRowDelete` 를 발생시켰다(v7 매뉴얼의 "Default: 0" 은 실제 동작과 다르다). `RowDelete(idx, c, 0)` 만 공식 `removeRow`.
+  - **v7 의 2·3번째 인자(`Confirm`·`event`)는 넘기지 않는다** — v8 `removeRow` 의 2·3번째 인자는 `nomerge`·`norender` 라 의미가 다르다(`norender=1` 이면 화면이 갱신되지 않는다). `Confirm=1` 이었으면 호출 전에 `confirm()` 으로 직접 묻는다.
+  - 인자 생략(`RowDelete()`, 포커스 행 삭제)은 `removeRow2(sheet.getFocusedRow())`. `"3|7|10"` 다중 행은 **행 객체를 먼저 모두 구한 뒤** 하나씩 지운다(지울 때마다 뒤 행의 index 가 당겨진다).
 - `DataCopy()` → `copyRow({row: sheet.getFocusedRow()})` (row 파라미터 필수).
 
 ## 9. 이벤트

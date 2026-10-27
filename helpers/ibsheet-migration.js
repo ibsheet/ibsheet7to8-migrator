@@ -28,9 +28,6 @@ if (typeof window.DebugMsg === 'undefined') {
     window.DebugMsg = function() {};
 }
 
-// 모든 시트 인스턴스가 공유하는 프로토타입. 여기에 정의한 함수는 sheet.xxx() 로 호출된다.
-const fn = IBSheet["Plugins"];
-
 
 // -----------------------------------------------------------------------------
 // 1. 행 인덱스 ↔ 행 객체
@@ -42,7 +39,7 @@ const fn = IBSheet["Plugins"];
  * Head로 추가하거나 setFixedTop()으로 상단에 고정된 행을 배열로 반환한다.
  * @returns {Array} 상단 고정 행(Head/Data Kind) 객체 배열
  */
-fn.getFixedTop = function () {
+IBSheet["Plugins"].getFixedTop = function () {
   var row = this.Head.firstChild;
   var rows = [];
   while (row) {
@@ -59,7 +56,7 @@ fn.getFixedTop = function () {
  * @param {number} rowIndex IBSheet7 기준 행 인덱스
  * @returns {object|null} 행 객체(헤더/필터/합계/데이터/푸터), 범위를 벗어나면 null
  */
-fn.getRowByIndex7 = function (rowIndex) {
+IBSheet["Plugins"].getRowByIndex7 = function (rowIndex) {
   // rowIndex가 공백/비숫자인 경우 오류 → null
   if (rowIndex === "" || rowIndex === null || rowIndex === undefined || typeof rowIndex != 'number') return null;
 
@@ -113,7 +110,7 @@ fn.getRowByIndex7 = function (rowIndex) {
  * @param {object} row 행 객체
  * @returns {number} IBSheet7 기준 행 인덱스
  */
-fn.getRowIndex7 = function(row) {
+IBSheet["Plugins"].getRowIndex7 = function(row) {
 	var rtnRowIdx = 0;
 	rtnRowIdx += this.getHeaderRows().length;
 	// 필터행이 보여지고 있는 경우
@@ -136,7 +133,7 @@ fn.getRowIndex7 = function(row) {
  * @param {number|string} colIndex 열 인덱스(숫자) 또는 '|' 구분 인덱스 문자열, 또는 이미 열 Name
  * @returns {string|string[]} 열 Name (또는 '|' 입력 시 이름 배열)
  */
-fn.getColByIndex7 = function (colIndex) {
+IBSheet["Plugins"].getColByIndex7 = function (colIndex) {
   // colIndex가 공백인 경우 오류 → ''
   if (colIndex === "" || colIndex === null || colIndex === undefined) return '';
 
@@ -166,7 +163,7 @@ fn.getColByIndex7 = function (colIndex) {
  * @param {string} colName 열 Name
  * @returns {number} IBSheet7 기준 열 인덱스
  */
-fn.getColIndex7 = function (colName) {
+IBSheet["Plugins"].getColIndex7 = function (colName) {
   return this.getColIndex(colName, 1) - 1 - ((this.Cols["SEQ"]?.VPos === -1) ? 1 : 0);
 }
 
@@ -180,7 +177,7 @@ fn.getColIndex7 = function (colName) {
  * @param {...*} args (row, col) — 둘 중 하나라도 없으면 undefined
  * @returns {*} 셀 값 (FormatFix 컬럼은 표시 문자열)
  */
-fn.getValue2 = function(...args) {
+IBSheet["Plugins"].getValue2 = function(...args) {
 	// row, col 중에 하나라도 없으면 return
 	if(!args[0] || !args[1] ) return;
 	// FormatFix:1 인 경우 getValue에 대해서도 Format이 적용된 문자열을 리턴
@@ -198,7 +195,7 @@ fn.getValue2 = function(...args) {
  * @param {*} v 설정할 값
  * @param {number|boolean} [evt] 0/false면 onAfterChange 이벤트를 발생시키지 않음
  */
-fn.setValue2 = function(r, c, v, evt) {
+IBSheet["Plugins"].setValue2 = function(r, c, v, evt) {
 	if(!r || !c) {
 		return;
 	}
@@ -252,7 +249,7 @@ fn.setValue2 = function(r, c, v, evt) {
  * Button 컬럼은 Disabled로 표현되므로 이를 흡수한다.
  * @param {...*} args (row, col, attr, val)
  */
-fn.setAttribute2 = function(...args) {
+IBSheet["Plugins"].setAttribute2 = function(...args) {
 	var row = args[0], col = args[1], attr = args[2], val = args[3];
 	if(attr === "CanEdit") {
 		if(row && col) {
@@ -272,7 +269,7 @@ fn.setAttribute2 = function(...args) {
  * 행의 상태(Added/Changed/Deleted/Moved)를 모두 클리어한다.
  * @param {object} r 행 객체
  */
-fn.clearRowStatus = function(r) {
+IBSheet["Plugins"].clearRowStatus = function(r) {
   this.setAttribute(r, null, "Added", 0, 0 );
   this.setAttribute(r, null, "Changed", 0, 0 );
   this.setAttribute(r, null, "Deleted", 0, 0 );
@@ -287,13 +284,19 @@ fn.clearRowStatus = function(r) {
 // -----------------------------------------------------------------------------
 
 /**
- * removeRow 브릿지. 삭제 전 onRowDelete 이벤트를 발생시킨다.
- * @param {...*} args (row) 또는 ({row: ...})
+ * IBSheet7 RowDelete 브릿지. removeRow 직전에 onRowDelete 이벤트를 발생시킨다.
+ * IBSheet7 RowDelete는 세 번째 인자(event)를 0으로 주지 않는 한 OnRowDelete를 발생시켰다
+ * (v7 매뉴얼의 "Default: 0"은 실제 동작과 다르다). event=0 호출은 공식 removeRow로 옮긴다.
+ * 인자는 공식 removeRow와 같다. v7 RowDelete의 2·3번째 인자(Confirm·event)는 의미가 달라 넘기지 않는다.
+ * @param {...*} args (row, nomerge, norender) 또는 ({row: ...})
  */
-fn.removeRow2 = function(...args) {
-  if(!args.length) return;
-  if(this?.options?.Events?.onRowDelete) {
-    this.options.Events.onRowDelete({sheet: this, row: args[0]["Kind"] == "Data" ? args[0] : args["row"] });
+IBSheet["Plugins"].removeRow2 = function(...args) {
+  if(!args.length || !args[0]) return;
+  // (row, ...) 형태면 args[0]이 행 객체, ({row: ...}) 형태면 args[0].row
+  const row = args[0]["Kind"] == "Data" ? args[0] : args[0]["row"];
+  if(row && this?.options?.Events?.onRowDelete) {
+    // api: v7 OnRowDelete(row, api)의 api — 메서드 호출에 의한 삭제이므로 항상 true
+    this.options.Events.onRowDelete({sheet: this, row: row, api: true});
   }
   this.removeRow(...args);
 }
@@ -304,7 +307,7 @@ fn.removeRow2 = function(...args) {
  * @param {number} [lvl] 트리 레벨(계층 행 추가 시)
  * @returns {object} 추가된 행 객체
  */
-fn.addRow2 = function(row, lvl) {
+IBSheet["Plugins"].addRow2 = function(row, lvl) {
 	var param = {}, targetRow;
 	if(typeof row == "undefined") { // 현재 포커스 된 행에 신규행 추가
 		// 포커스 된 행 아래 신규행 추가
@@ -353,7 +356,7 @@ fn.addRow2 = function(row, lvl) {
  * @param {boolean} [isFullSum] true면 SubSum 행도 합산에 포함
  * @returns {number|null} 합계, 오류 시 null
  */
-fn.computeSum = function(col, startRow = this.getFirstRow(), endRow = this.getLastRow(), isFullSum) {
+IBSheet["Plugins"].computeSum = function(col, startRow = this.getFirstRow(), endRow = this.getLastRow(), isFullSum) {
 	if(!this.getCols().includes(col)) {
 		console.log("computeSum error! : not exist col.");
 		return null;
@@ -385,7 +388,7 @@ fn.computeSum = function(col, startRow = this.getFirstRow(), endRow = this.getLa
  * @param {string} key 부가 데이터 키
  * @returns {*} sheet.etc[key] 값
  */
-fn.getEtcData = function(key) {
+IBSheet["Plugins"].getEtcData = function(key) {
 	return this?.etc?.[key];
 }
 
@@ -398,7 +401,7 @@ fn.getEtcData = function(key) {
  * 시트 객체의 너비를 변경한다.
  * @param {number|string} w 너비(숫자면 px 부여, 문자열이면 그대로)
  */
-fn.setSheetWidth = function(w) {
+IBSheet["Plugins"].setSheetWidth = function(w) {
   this.MainTag.style.width = isNaN(w) ? w : w + "px";
 }
 
@@ -406,7 +409,7 @@ fn.setSheetWidth = function(w) {
  * 시트 객체의 현재 높이를 반환한다.
  * @returns {number} 높이(px)
  */
-fn.GetSheetHeight = fn.getSheetHeight = function() {
+IBSheet["Plugins"].GetSheetHeight = IBSheet["Plugins"].getSheetHeight = function() {
 	return this.MainTag.getBoundingClientRect().height;
 }
 
@@ -414,7 +417,7 @@ fn.GetSheetHeight = fn.getSheetHeight = function() {
  * 시트 객체의 높이를 변경하고 다시 렌더링한다.
  * @param {number|string} h 높이(숫자면 px 부여)
  */
-fn.SetSheetHeight = fn.setSheetHeight = function(h) {
+IBSheet["Plugins"].SetSheetHeight = IBSheet["Plugins"].setSheetHeight = function(h) {
 	if(!isNaN(h)) h = h + "px";
 	this.MainTag.style.height = h;
 	this.rerender();
@@ -435,7 +438,7 @@ fn.SetSheetHeight = fn.setSheetHeight = function(h) {
  *
  * @param {string} menuText "|" 구분 메뉴 문자열 (예: "행추가|행복사|*-|엑셀내려받기")
  */
-fn.setActionMenu = fn.SetActionMenu = function(menuText) {
+IBSheet["Plugins"].setActionMenu = IBSheet["Plugins"].SetActionMenu = function(menuText) {
 	if(!menuText) return;
 
 	var sheet = this;
@@ -500,7 +503,7 @@ fn.setActionMenu = fn.SetActionMenu = function(menuText) {
  * @param {string} format 포맷 문자열 (예: "###-**-####")
  * @returns {string} 변환된 문자열
  */
-fn.convertCustomFormat = function(val, format) {
+IBSheet["Plugins"].convertCustomFormat = function(val, format) {
   // 숫자만 추출
   const digits = val.replace(/\D/g, "");
 

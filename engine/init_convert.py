@@ -368,29 +368,36 @@ def convert(extracted, rules, calls=None):
                             json.dumps(v, ensure_ascii=False)))
                     out[k] = v
                 continue
-            if k == "Type" and isinstance(v, str):
+            if k == "Type":
+                # ★v7 `Type` 원래 값을 **모든 컬럼에** `orgType` 으로 남긴다.
+                #   v7 Type 은 v8 Type 과 1:1 이 아니라(`Status`→`Text`+Extend, `Combo`→`Enum`,
+                #   `CheckBox`·`DelCheck`→`Bool` …) 바꾸고 나면 원래 무엇이었는지 알 수 없다.
+                #   브릿지 `setValue2` 가 `orgType=="Status"` 로 행 상태를 다루고, 그 밖에도
+                #   나중에 v7 타입별 처리가 필요할 때 쓴다(기존 7to8converter2 와 같은 관례).
+                #   v8 은 모르는 키라 무시한다 — check_names 의 TOOLKIT_KEYS 참고.
                 # ★**값 단위 규칙**을 여기서도 적용한다.
                 #   `convert` 는 TYPE_STATUS·TYPE_DELCHECK·TYPE_RESULT 와 value_transforms
                 #   (Combo→Enum · CheckBox→Bool) 로 다 잡는데, 초기화 변환은 **속성 이름만**
                 #   보고 값은 그대로 내보내고 있었다. v8 에 없는 타입이 실려 나가
                 #   `Type:"DelCheck"` 같은 것이 조용히 무시된다(2026-08-12).
-                nm = c.get("Name") or c.get("SaveName") or "?"
-                tv = TYPE_VALUES.get(v)
-                if tv:
-                    newtype, extend, why = tv
-                    if newtype:
-                        out["Type"] = newtype
-                    if extend:
-                        # ★따옴표를 붙이면 안 된다 — `IB_Preset.STATUS` 는 문자열이 아니라
-                        #   `plugins/ibsheet-common.js` 가 만드는 **전역 객체 참조**다.
-                        out["Extend"] = {"__raw__": extend}
-                    note("Col `%s`: Type:\"%s\" → %s%s. %s"
-                         % (nm, v,
-                            ("`Type:\"%s\"`" % newtype) if newtype else "**대응 없음**",
-                            (" + `Extend:%s`" % extend) if extend else "", why))
-                    if not newtype:
-                        out[k] = v          # 대응이 없으면 지우지 않고 남겨 눈에 띄게 둔다
+                tv = TYPE_VALUES.get(v) if isinstance(v, str) else None
+                if not tv:
+                    out[k] = v
+                    out["orgType"] = v
                     continue
+                nm = c.get("Name") or c.get("SaveName") or "?"
+                newtype, extend, why = tv
+                out["Type"] = newtype or v      # 대응이 없으면 지우지 않고 남겨 눈에 띄게 둔다
+                out["orgType"] = v
+                if extend:
+                    # ★따옴표를 붙이면 안 된다 — `IB_Preset.STATUS` 는 문자열이 아니라
+                    #   `plugins/ibsheet-common.js` 가 만드는 **전역 객체 참조**다.
+                    out["Extend"] = {"__raw__": extend}
+                note("Col `%s`: Type:\"%s\" → %s%s. %s"
+                     % (nm, v,
+                        ("`Type:\"%s\"`" % newtype) if newtype else "**대응 없음**",
+                        (" + `Extend:%s`" % extend) if extend else "", why))
+                continue
             if k == "Format" and isinstance(v, str):
                 # ★v7 `Format` 키워드는 v8 이 **모르는 값이라 무시**한다.
                 #   `convert` 경로는 FORMAT_* 로 잡고 있었는데 여기(초기화 변환)는
@@ -569,10 +576,12 @@ def convert(extracted, rules, calls=None):
     #   v8 은 모르는 옵션을 무시하므로 오류가 안 난다 — 화면만 달라진다.
     defined, mentioned = v8_names()
     STRUCT = {"Cfg", "Cols", "LeftCols", "Def", "Events", "Head", "Foot", "__raw__"}
+    # 툴킷이 일부러 넣는 키 — v8 매뉴얼에는 없지만 브릿지 헬퍼가 읽으므로 "지울 것" 으로 안내하면 안 된다
+    TOOLKIT_KEYS = {"orgType"}
 
     def check_names(kind, keys, where):
         for k in keys:
-            if k in STRUCT or not re.match(r"^[A-Za-z]", str(k)):
+            if k in STRUCT or k in TOOLKIT_KEYS or not re.match(r"^[A-Za-z]", str(k)):
                 continue
             # ★규칙 파일에 그 속성의 **구체 안내가 있으면 그것을 쓴다**(rule_note_prop 주석).
             #   "v8 매뉴얼에 없다" 로만 내보내면 우리가 이미 아는 답을 안 알려 주는 셈이다.

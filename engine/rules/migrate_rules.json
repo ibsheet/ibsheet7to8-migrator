@@ -366,6 +366,15 @@
       },
       "note": "✅"
     },
+    "OnRowDelete": {
+      "v8": "onRowDelete",
+      "args": {
+        "row": "row",
+        "Row": "row",
+        "api": "api"
+      },
+      "note": "★**v8 자체 이벤트가 아니다** — 표준 헬퍼 `removeRow2` 가 행을 지우기 직전에 초기화 `Events.onRowDelete` 를 직접 호출한다(헬퍼 로드 필수). v7 `RowDelete` 호출을 `removeRow2` 로 옮겨야 발생한다. `row` 는 v7 행 index → v8 **행 객체**, `api` 는 항상 `true`. v7 은 신규행을 `DelCheck` 클릭으로 지울 때도 발생(`api=false`)했지만 이 경로는 헬퍼가 대응하지 않는다. v8 `onBeforeRowDelete`/`onAfterRowDelete` 는 `deleteRow`(삭제 상태 표시) 이벤트라 다른 것이다."
+    },
     "OnRowSearchEnd": {
       "v8": "onRowLoad",
       "args": {
@@ -1135,15 +1144,15 @@
     },
     {
       "id": "TYPE_COMBO_TO_ENUM",
-      "desc": "Type:\"Combo\" → Type:\"Enum\" (conventions.md §3). Enum/EnumKeys(| 접두사) 설정은 별도 판단 필요.",
+      "desc": "Type:\"Combo\" → Type:\"Enum\", orgType:\"Combo\" (conventions.md §3 — v7 원래 Type 을 orgType 으로 보존). Enum/EnumKeys(| 접두사) 설정은 별도 판단 필요.",
       "pattern": "(?<![\\w$])([\"']?)Type\\1\\s*:\\s*([\"'])Combo\\2",
-      "replacement": "\\1Type\\1: \\2Enum\\2"
+      "replacement": "\\1Type\\1: \\2Enum\\2, \\1orgType\\1: \\2Combo\\2"
     },
     {
       "id": "TYPE_CHECKBOX_TO_BOOL",
-      "desc": "Type:\"CheckBox\" → Type:\"Bool\" (conventions.md §3).",
+      "desc": "Type:\"CheckBox\" → Type:\"Bool\", orgType:\"CheckBox\" (conventions.md §3 — v7 원래 Type 을 orgType 으로 보존).",
       "pattern": "(?<![\\w$])([\"']?)Type\\1\\s*:\\s*([\"'])CheckBox\\2",
-      "replacement": "\\1Type\\1: \\2Bool\\2"
+      "replacement": "\\1Type\\1: \\2Bool\\2, \\1orgType\\1: \\2CheckBox\\2"
     },
     {
       "_comment": "── Cfg 속성명 단순 변경 (property-mapping.md ✅ '이름 변경'). 충돌·구조변경 없는 1:1만. Cfg→Cfg 동일 컨텍스트. ──",
@@ -1479,7 +1488,7 @@
     },
     {
       "id": "ROWDELETE",
-      "desc": "RowDelete(row) → removeRow2(row) (표준 헬퍼 — 삭제 전 onRowDelete 발생). IBSheet7은 행 삭제 시 이벤트가 발생했으므로 기본은 removeRow2. 이벤트 핸들러가 없거나 불필요하면 공식 removeRow(row). ★자동 치환하지 않는 이유: 둘 중 어느 쪽인지는 onRowDelete 핸들러 존재 여부를 봐야 판단 가능.",
+      "desc": "RowDelete(row[, Confirm, event]) → removeRow2(행객체) (표준 헬퍼 — 삭제 직전 onRowDelete 발생). ★IBSheet7 RowDelete 는 세 번째 인자 event 를 0 으로 주지 않는 한 OnRowDelete 를 발생시켰다(v7 매뉴얼의 \"Default: 0\" 은 실제 동작과 다르다 — 2026-10-27 확인). 그래서 기본은 removeRow2, RowDelete(r, c, 0) 처럼 event=0 이면 공식 removeRow. ★v7 의 2·3번째 인자를 그대로 넘기지 말 것 — removeRow/removeRow2 의 2·3번째 인자는 nomerge·norender 라 의미가 다르다(norender=1 이면 renderBody() 전까지 화면이 갱신되지 않는다). Confirm=1 이었으면 호출 전에 confirm() 으로 직접 묻는다. row 인자: 행 index → getRowByIndex7(idx), 생략(RowDelete()) → getFocusedRow(). \"3|7|10\" 같은 다중 행은 **행 객체를 먼저 모두 구한 뒤** 하나씩 removeRow2(지울 때마다 뒤 행의 index 가 당겨진다). ★자동 치환하지 않는 이유: index→행 객체 변환과 event·Confirm 인자 판단이 필요.",
       "pattern": "\\.RowDelete\\s*\\("
     },
     {
@@ -1605,7 +1614,7 @@
     },
     {
       "id": "FITCOL",
-      "desc": "FitColWidth(\"10|50|30\") → fitColWidth([10,50,30]) (인자 문자열→배열). FitSize() → 너비만 지원(높이 불가), getCols().forEach(c=>fitSize(c)).",
+      "desc": "FitColWidth(\"10|50|30\") → fitColWidth([10,50,30]) (인자 문자열→배열). 인자 없는 FitColWidth() → fitColWidth(). ★열에 RelWidth 가 있어도 fitColWidth 는 동작한다(최근 패치, 2026-10-27 확인) — v8 매뉴얼 funcs/core/fit-col-width.md 의 '주의: RelWidth 사용 시 정상 지원되지 않음' 문구는 낡았다. 그 문구를 근거로 rerender() 로 바꾸거나 호출을 지우지 말 것. FitSize() → 너비만 지원(높이 불가), getCols().forEach(c=>fitSize(c)).",
       "pattern": "\\.(FitColWidth|FitSize|FitSizeCol)\\s*\\("
     },
     {
@@ -1667,7 +1676,7 @@
     },
     {
       "id": "CFG_TO_COL_AUTOFITCOLWIDTH",
-      "desc": "Cfg AutoFitColWidth → Col RelWidth. ★레벨 이동 — Cfg에 두면 v8이 무시한다. 대상 컬럼마다 RelWidth 지정(또는 Cfg.FitWidth 검토).",
+      "desc": "Cfg AutoFitColWidth → Col RelWidth. ★레벨 이동 — v8 에도 동명 (cfg) AutoFitColWidth 가 있지만 기본적으로 쓰지 않는다(방침, 2026-10-27). 대상 컬럼마다 RelWidth 지정(또는 Cfg.FitWidth 검토). v7 열 속성 FitColWidth:0(비율 조정 제외)인 열에는 RelWidth 를 주지 않는다.",
       "pattern": "(?<![\\w$])([\"']?)AutoFitColWidth\\1(\\s*:)"
     },
     {

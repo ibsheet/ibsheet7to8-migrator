@@ -345,7 +345,7 @@ onAfterClick: function(evtParam) {
 | `OnMouseUp` | `onMouseUp` | ✅ |  |
 | `OnPopupClick` | `onButtonClick` | ✅ |  |
 | `OnResize` | `onResize` | ✅ |  |
-| `OnRowDelete` | ❌ 대응 없음 | ❌ | 미지원 지원안함 |
+| `OnRowDelete` | `onRowDelete` (표준 헬퍼) | ⚠️ | **v8 자체 이벤트가 아니다** — 표준 헬퍼 `removeRow2` 가 행을 지우기 직전에 초기화 `Events.onRowDelete` 를 직접 호출한다(헬퍼 로드 필수). v7 `RowDelete` 호출을 `removeRow2` 로 옮겨야 발생한다(`event=0` 이던 호출은 공식 `removeRow`). 인자: `evtParam.row`(v7 은 행 index → v8 **행 객체**), `evtParam.api`(항상 `true`). ★v7 은 신규행을 `DelCheck` 클릭으로 지울 때도 발생(`api=false`)했지만 이 경로는 헬퍼가 대응하지 않는다. v8 `onBeforeRowDelete`/`onAfterRowDelete` 는 `deleteRow`(삭제 **상태** 표시) 이벤트라 다른 것이다 |
 | `OnSelectEnd` | `onSelectEnd` | ✅ |  |
 | `OnTreeCheckChange` | `(JSON)OnClickSide` | ✅ | // 체크 한 행의 자식행이 있는 경우 자식행에 값을 변경  function mySheet_OnTreeCheckChange(row, col, value, level, hasChild) {    var childRows = [];    // 자식행이 있는 경우    if (hasChild) {      / |
 | `OnUserResize` | `onAfterColResize` | ✅ |  |
