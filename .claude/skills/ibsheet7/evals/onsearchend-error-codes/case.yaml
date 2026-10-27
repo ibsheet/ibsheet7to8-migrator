@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: onsearchend-error-codes
+expected_outcome: |
+  mySheet_OnSearchEnd 이벤트에서 Code 인자로 성공/실패를 구분하고, -3/-4/-5/-6 코드별 메시지를 분기하는 코드를 제시한다.

@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: excel-korean-filename-garbled
+expected_outcome: |
+  Down2Excel.jsp의 파일명 처리 부분(sEncodingFileName, TheDownloadFileName)을 수정하는 방법을 환경별로 안내한다.
