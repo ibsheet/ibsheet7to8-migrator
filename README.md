@@ -1,7 +1,7 @@
 # ibsheet7to8-migrator
 
-**Simple and fast migration tool for upgrading IBSheet7 projects to IBSheet8.**
-IBSheet7 프로젝트를 IBSheet8으로 손쉽게 업그레이드할 수 있는 마이그레이션 도구입니다.
+**Simple and fast migration tool for upgrading IBsheet 7 projects to IBsheet 8.**
+IBsheet 7 프로젝트를 IBsheet 8으로 손쉽게 업그레이드할 수 있는 마이그레이션 도구입니다.
 
 ![status](https://img.shields.io/badge/version-1.2.1-blue)
 ![python](https://img.shields.io/badge/python-3.8%2B-3776AB)
@@ -16,12 +16,12 @@ IBSheet7 프로젝트를 IBSheet8으로 손쉽게 업그레이드할 수 있는 
 
 ## 이 도구가 하는 일
 
-IBSheet7의 JSP/JavaScript 코드를 IBSheet8 API로 변환합니다. **"안전한 변환은 자동으로, 위험한 변환은 분리해서"** 가 설계 원칙입니다.
+IBsheet 7의 JSP/JavaScript 코드를 IBsheet 8 API로 변환합니다. **"안전한 변환은 자동으로, 위험한 변환은 분리해서"** 가 설계 원칙입니다.
 
 | 레이어 | 담당 | 처리 대상 |
 |---|---|---|
 | **결정론** | `engine/migrate_core.py` | 1:1 동일 시그니처 메서드·속성값 — 자동·안전 |
-| **초기화** | `engine/init_convert.py` | v7 초기화를 **실행해서** 값을 읽어 IBSheet8 옵션 코드 생성 — AI 불필요 |
+| **초기화** | `engine/init_convert.py` | v7 초기화를 **실행해서** 값을 읽어 IBsheet 8 옵션 코드 생성 — AI 불필요 |
 | **판단** | AI 에이전트 + `docs/` | 반환값 의미 변경, 접두사 strip, 미지원 API 재구성 — 컨텍스트 필요 |
 | **검증** | `verify/` 3종 | 잔존 0 / 구문 OK / 함수 누락 0 을 스스로 증명 |
 
@@ -37,19 +37,19 @@ IBSheet7의 JSP/JavaScript 코드를 IBSheet8 API로 변환합니다. **"안전�
 > **호출 지점의 의도에 따라 답이 갈리는 것**이라, 기계적으로 바꾸면 오류 없이 조용히 동작이 달라집니다.
 > 실측한 542개 화면 중 **97.8%** 에 그런 자리가 있었습니다 — 그것을 착수 전에 목록으로 뽑아 주는 것이 이 도구의 값입니다.
 
-- ✅ JSP/JS의 IBSheet7 API → IBSheet8 정적 변환 + 정합성 검증
+- ✅ JSP/JS의 IBsheet 7 API → IBsheet 8 정적 변환 + 정합성 검증
 - ✅ `UTF-8`·`cp949` 자동 판별 — 출력은 **원본과 같은 인코딩·BOM·줄끝**
 - ⚠️ `*.tobe` 는 **초안**입니다 — `*.report.json` 의 `needs_review` 를 처리해야 동작합니다
-- ❌ **IBSheet v3 화면**(`InitDataProperty` 계열) — 세대가 다른 제품이라 대상이 아닙니다(건너뛰며 알려 줍니다)
+- ❌ **IB Sheet v3 화면**(`InitDataProperty` 계열) — 세대가 다른 제품이라 대상이 아닙니다(건너뛰며 알려 줍니다)
 - ❌ 백엔드(컨트롤러·매퍼 SQL), 실제 브라우저 동작/QA — 변환 후 별도 수행
-- ❌ IBSheet8 라이브러리·라이선스 (벤더를 통해 별도 도입)
+- ❌ IBsheet 8 라이브러리·라이선스 (벤더를 통해 별도 도입)
 
 ## ⚠️ 변환 결과는 브릿지 헬퍼에 의존합니다
 
-IBSheet7↔8의 구조적 불일치(행/열 인덱스 체계 차이, 반환값 의미 변경, 사라진 API)는 **표준 브릿지 헬퍼**가 흡수합니다.
+IBsheet 7↔8의 구조적 불일치(행/열 인덱스 체계 차이, 반환값 의미 변경, 사라진 API)는 **표준 브릿지 헬퍼**가 흡수합니다.
 변환 결과에 `getValue2`·`setAttribute2`·`getRowByIndex7`처럼 **`2`/`7`로 끝나는 함수**가 있으면 이 헬퍼의 함수입니다.
 
-**`helpers/ibsheet-migration.js` 를 웹앱에 배포하고, IBSheet8 본체 다음에 불러오세요.**
+**`helpers/ibsheet-migration.js` 를 웹앱에 배포하고, IBsheet 8 본체 다음에 불러오세요.**
 
 ```html
 <script src="/js/ibsheet/ibsheet.js"></script>
@@ -169,7 +169,7 @@ python verify/fn_parity.py     myfile.jsp myfile.tobe.jsp
 제3자 재배포·파생 도구 제작은 허용되지 않습니다. 전문은 [LICENSE](LICENSE) 참고.
 
 - `helpers/ibsheet-migration.js`는 변환 결과의 런타임 의존 파일이므로 **이용자 웹 애플리케이션에 배포할 수 있습니다**(LICENSE §3).
-- IBSheet8 라이브러리·라이선스는 포함되지 않으며 벤더를 통해 별도 도입해야 합니다.
+- IBsheet 8 라이브러리·라이선스는 포함되지 않으며 벤더를 통해 별도 도입해야 합니다.
 
 ## 문의 / 기술지원
 
